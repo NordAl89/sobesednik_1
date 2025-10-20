@@ -22,17 +22,13 @@ export const useExpertsStore = defineStore('experts', {
         console.log('✅ Ответ от сервера:', response);
         
         // Сохраняем в локальное состояние
-        const localExpert = {
-          ...response
-        }
-        
-        this.experts.push(localExpert)
+        this.experts.push(response)
         
         if (process.client) {
           localStorage.setItem('experts', JSON.stringify(this.experts))
         }
 
-        return localExpert
+        return response
         
       } catch (error) {
         console.error('💥 Ошибка при создании эксперта:', error);
@@ -44,6 +40,8 @@ export const useExpertsStore = defineStore('experts', {
           id: Date.now().toString(),
           rating: 0,
           totalSessions: 0,
+          adminVerified: false,
+          status: 'draft',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         }
@@ -90,69 +88,158 @@ export const useExpertsStore = defineStore('experts', {
       }
     },
 
- async updateExpertProfile(expertId, updateData) {
-  try {
-    console.log('📡 Отправка обновления на сервер...', { expertId, updateData });
-    
-    // Используем POST вместо PATCH
-    const response = await $fetch(`http://localhost:4000/experts/${expertId}/update`, {
-      method: 'POST',
-      body: updateData
-    });
+    async updateExpertProfile(expertId, updateData) {
+      try {
+        console.log('📡 Отправка обновления на сервер...', { expertId, updateData });
+        
+        // Используем POST эндпоинт для обновления
+        const response = await $fetch(`http://localhost:4000/experts/${expertId}/update`, {
+          method: 'POST',
+          body: updateData
+        });
 
-    console.log('✅ Ответ от сервера:', response);
-    
-    // Обновляем локальное состояние
-    const index = this.experts.findIndex(e => e.id === expertId);
-    if (index !== -1) {
-      this.experts[index] = { ...this.experts[index], ...response };
-    }
-    
-    if (this.currentExpert && this.currentExpert.id === expertId) {
-      this.currentExpert = { ...this.currentExpert, ...response };
-      if (process.client) {
-        localStorage.setItem('currentExpert', JSON.stringify(this.currentExpert));
+        console.log('✅ Ответ от сервера:', response);
+        
+        // Обновляем локальное состояние
+        const index = this.experts.findIndex(e => e.id === expertId);
+        if (index !== -1) {
+          this.experts[index] = { ...this.experts[index], ...response };
+        }
+        
+        // Обновляем текущего эксперта если это он
+        if (this.currentExpert && this.currentExpert.id === expertId) {
+          this.currentExpert = { ...this.currentExpert, ...response };
+          if (process.client) {
+            localStorage.setItem('currentExpert', JSON.stringify(this.currentExpert));
+          }
+        }
+        
+        // Сохраняем в localStorage
+        if (process.client) {
+          localStorage.setItem('experts', JSON.stringify(this.experts));
+        }
+
+        return response;
+      } catch (error) {
+        console.error('❌ Ошибка обновления профиля:', error);
+        
+        // Fallback: локальное сохранение
+        const index = this.experts.findIndex(e => e.id === expertId);
+        if (index !== -1) {
+          this.experts[index] = { ...this.experts[index], ...updateData };
+          if (process.client) {
+            localStorage.setItem('experts', JSON.stringify(this.experts));
+          }
+        }
+        
+        throw error;
       }
-    }
-    
-    if (process.client) {
-      localStorage.setItem('experts', JSON.stringify(this.experts));
-    }
+    },
 
-    return response;
-  } catch (error) {
-    console.error('❌ Ошибка обновления профиля:', error);
-    throw error;
-  }
-},
+    async requestModeration(expertId) {
+      try {
+        console.log('📋 Запрос модерации для эксперта:', expertId);
+        
+        const response = await $fetch(`http://localhost:4000/experts/${expertId}/moderation`, {
+          method: 'POST'
+        });
+
+        console.log('✅ Ответ на запрос модерации:', response);
+        
+        // Обновляем локальное состояние
+        const index = this.experts.findIndex(e => e.id === expertId);
+        if (index !== -1) {
+          this.experts[index] = { ...this.experts[index], ...response };
+        }
+        
+        if (this.currentExpert && this.currentExpert.id === expertId) {
+          this.currentExpert = { ...this.currentExpert, ...response };
+          if (process.client) {
+            localStorage.setItem('currentExpert', JSON.stringify(this.currentExpert));
+          }
+        }
+        
+        if (process.client) {
+          localStorage.setItem('experts', JSON.stringify(this.experts));
+        }
+
+        return response;
+      } catch (error) {
+        console.error('❌ Ошибка запроса модерации:', error);
+        throw error;
+      }
+    },
+
     async syncWithServer() {
       try {
         const response = await $fetch('http://localhost:4000/experts')
-        // Объединяем с локальными данными
+        
+        // Обновляем локальное состояние данными с сервера
         this.experts = response.map(serverExpert => {
-          const localExpert = this.experts.find(e => e.id === serverExpert.id)
+          const localExpert = this.experts.find(e => e.id === serverExpert.id);
+          
+          // Объединяем данные: приоритет у серверных, но сохраняем локальные reviews и sessions если они есть
           return {
             ...serverExpert,
-            // Сохраняем локальные поля если они есть
-            reviews: localExpert?.reviews || [],
-            sessions: localExpert?.sessions || []
-          }
-        })
+            reviews: localExpert?.reviews || serverExpert.reviews || [],
+            sessions: localExpert?.sessions || serverExpert.sessions || []
+          };
+        });
         
         if (process.client) {
-          localStorage.setItem('experts', JSON.stringify(this.experts))
+          localStorage.setItem('experts', JSON.stringify(this.experts));
         }
       } catch (error) {
-        console.error('Ошибка синхронизации с сервером:', error)
+        console.error('Ошибка синхронизации с сервером:', error);
+        
+        // Fallback: используем локальные данные
+        if (process.client) {
+          const localExperts = localStorage.getItem('experts');
+          if (localExperts) {
+            this.experts = JSON.parse(localExperts);
+          }
+        }
       }
     },
 
     getExpertById(id) {
-      return this.experts.find(e => e.id == id)
+      return this.experts.find(e => e.id == id);
+    },
+
+    // Новый метод для получения экспертов по статусу (для админ-панели)
+    getExpertsByStatus(status) {
+      return this.experts.filter(expert => expert.status === status);
+    },
+
+    // Метод для получения ожидающих модерации экспертов
+    getPendingExperts() {
+      return this.experts.filter(expert => expert.status === 'pending');
+    },
+
+    // Метод для получения активных экспертов
+    getActiveExperts() {
+      return this.experts.filter(expert => expert.status === 'active');
     }
   },
 
   getters: {
     isLoggedIn: (state) => !!state.currentExpert,
+    
+    // Новые геттеры для удобства
+    currentExpertId: (state) => state.currentExpert?.id,
+    
+    isCurrentExpertAdminVerified: (state) => state.currentExpert?.adminVerified || false,
+    
+    // Геттер для проверки, может ли текущий эксперт редактировать профиль
+    canEditProfile: (state) => {
+      if (!state.currentExpert) return false;
+      
+      // Эксперт может редактировать свой профиль если:
+      // - статус 'draft' (черновик)
+      // - статус 'active' (активный)
+      // - статус 'pending' (ожидает модерации)
+      const editableStatuses = ['draft', 'active', 'pending'];
+      return editableStatuses.includes(state.currentExpert.status);
+    }
   }
-})
+});

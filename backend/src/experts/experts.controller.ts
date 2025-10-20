@@ -5,42 +5,42 @@ import {
   Body, 
   Param, 
   Delete, 
-  UnauthorizedException 
+  UnauthorizedException,
+  Patch 
 } from '@nestjs/common';
 import { ExpertsService } from './experts.service';
 import { CreateExpertDto } from './dto/create-expert.dto';
 import { LoginExpertDto } from './dto/login-expert.dto';
-import { Patch } from '@nestjs/common';
 
 @Controller('experts')
 export class ExpertsController {
   constructor(private readonly expertsService: ExpertsService) {}
 
   @Patch(':id')
-async update(
-  @Param('id') id: string, 
-  @Body() updateExpertDto: any
-) {
-  console.log('📝 Обновление эксперта:', id, updateExpertDto);
-  
-  const expert = await this.expertsService.update(id, updateExpertDto);
-  console.log('✅ Эксперт обновлен:', expert);
-  
-  return {
-    id: expert.id,
-    login: expert.login,
-    name: expert.name,
-    age: expert.age,
-    status: expert.status,
-    about: expert.about,
-    allowedTopics: expert.allowedTopics,
-    forbiddenTopics: expert.forbiddenTopics,
-    price: expert.price,
-    mainPhoto: expert.mainPhoto,
-    rating: expert.rating,
-    totalSessions: expert.totalSessions
-  };
-}
+  async update(
+    @Param('id') id: string, 
+    @Body() updateExpertDto: any
+  ) {
+    console.log('📝 Обновление эксперта:', id, updateExpertDto);
+    
+    const expert = await this.expertsService.update(id, updateExpertDto);
+    console.log('✅ Эксперт обновлен:', expert);
+    
+    return {
+      id: expert.id,
+      login: expert.login,
+      name: expert.name,
+      age: expert.age,
+      availability: expert.availability,
+      about: expert.about,
+      allowedTopics: expert.allowedTopics,
+      forbiddenTopics: expert.forbiddenTopics,
+      price: expert.price,
+      mainPhotoUrl: expert.mainPhotoUrl,
+      rating: expert.rating,
+      totalSessions: expert.totalSessions
+    };
+  }
 
   @Post()
   async create(@Body() createExpertDto: CreateExpertDto) {
@@ -54,92 +54,98 @@ async update(
       login: expert.login,
       name: expert.name,
       age: expert.age,
-      status: expert.status,
+      availability: expert.availability,
       about: expert.about,
       allowedTopics: expert.allowedTopics,
       forbiddenTopics: expert.forbiddenTopics,
       price: expert.price,
-      mainPhoto: expert.mainPhoto,
-      gallery: expert.gallery,
+      mainPhotoUrl: expert.mainPhotoUrl,
+      galleryUrls: expert.galleryUrls,
       createdAt: expert.createdAt
     };
   }
 
   @Post('login')
-async login(@Body() loginExpertDto: LoginExpertDto) {
-  console.log('🚪 Запрос на вход:', loginExpertDto)
-  
-  const expert = await this.expertsService.validateExpert(
-    loginExpertDto.login,
-    loginExpertDto.password
-  );
-
-  if (!expert) {
-    console.log('❌ Вход отклонен: неверные данные')
-    throw new UnauthorizedException('Неверный логин или пароль');
-  }
-
-  console.log('✅ Вход успешен для эксперта:', expert.name)
-  
-  return {
-    id: expert.id,
-    login: expert.login,
-    name: expert.name,
-    age: expert.age,
-    status: expert.status,
-    about: expert.about,
-    allowedTopics: expert.allowedTopics,
-    forbiddenTopics: expert.forbiddenTopics,
-    price: expert.price,
-    mainPhoto: expert.mainPhoto,
-    rating: expert.rating,
-    totalSessions: expert.totalSessions
-  };
-}
-
-@Post(':id/update')
-async updateViaPost(
-  @Param('id') id: string, 
-  @Body() updateExpertDto: any
-) {
-  console.log('📝 Обновление эксперта через POST:', id, updateExpertDto);
-  
-  const expert = await this.expertsService.update(id, updateExpertDto);
-  console.log('✅ Эксперт обновлен:', expert);
-  
-  return {
-    id: expert.id,
-    login: expert.login,
-    name: expert.name,
-    age: expert.age,
-    status: expert.status,
-    about: expert.about,
-    allowedTopics: expert.allowedTopics,
-    forbiddenTopics: expert.forbiddenTopics,
-    price: expert.price,
-    mainPhoto: expert.mainPhoto,
-    rating: expert.rating,
-    totalSessions: expert.totalSessions
-  };
-}
-  @Get('profile/:id')
-  async getProfile(@Param('id') id: string) {
-    const expert = await this.expertsService.getProfile(id); // Используем getProfile
+  async login(@Body() loginExpertDto: LoginExpertDto) {
+    console.log('🚪 Запрос на вход:', loginExpertDto)
     
-    // Возвращаем данные эксперта без пароля
+    const expert = await this.expertsService.validateExpert(
+      loginExpertDto.login,
+      loginExpertDto.password
+    );
+
+    if (!expert) {
+      console.log('❌ Вход отклонен: неверные данные')
+      throw new UnauthorizedException('Неверный логин или пароль');
+    }
+
+    console.log('✅ Вход успешен для эксперта:', expert.name)
+    
     return {
       id: expert.id,
       login: expert.login,
       name: expert.name,
       age: expert.age,
-      status: expert.status,
+      availability: expert.availability,
       about: expert.about,
       allowedTopics: expert.allowedTopics,
       forbiddenTopics: expert.forbiddenTopics,
       price: expert.price,
-      mainPhoto: expert.mainPhoto,
+      mainPhotoUrl: expert.mainPhotoUrl,
+      rating: expert.rating,
+      totalSessions: expert.totalSessions
+    };
+  }
+
+  @Post(':id/update')
+  async updateViaPost(
+    @Param('id') id: string, 
+    @Body() updateExpertDto: any
+  ) {
+    console.log('📝 Обновление эксперта через POST:', id, updateExpertDto);
+    
+    const expert = await this.expertsService.update(id, updateExpertDto);
+    console.log('✅ Эксперт обновлен:', expert);
+    
+    return {
+      id: expert.id,
+      login: expert.login,
+      name: expert.name,
+      age: expert.age,
+      availability: expert.availability,
+      about: expert.about,
+      allowedTopics: expert.allowedTopics,
+      forbiddenTopics: expert.forbiddenTopics,
+      price: expert.price,
+      mainPhotoUrl: expert.mainPhotoUrl,
+      rating: expert.rating,
+      totalSessions: expert.totalSessions
+    };
+  }
+
+  @Get('profile/:id')
+  async getProfile(@Param('id') id: string) {
+    const expert = await this.expertsService.getProfile(id);
+    
+    return {
+      id: expert.id,
+      login: expert.login,
+      name: expert.name,
+      age: expert.age,
+      availability: expert.availability,
+      about: expert.about,
+      allowedTopics: expert.allowedTopics,
+      forbiddenTopics: expert.forbiddenTopics,
+      price: expert.price,
+      mainPhotoUrl: expert.mainPhotoUrl,
       rating: expert.rating,
       totalSessions: expert.totalSessions,
+      adminVerified: expert.adminVerified,
+      status: expert.status,
+      telegram: expert.telegram,
+      otherMessengers: expert.otherMessengers,
+      adultTopics: expert.adultTopics,
+      noForbiddenTopics: expert.noForbiddenTopics,
       createdAt: expert.createdAt
     };
   }
@@ -151,12 +157,16 @@ async updateViaPost(
       id: expert.id,
       name: expert.name,
       age: expert.age,
-      status: expert.status,
+      availability: expert.availability,
       about: expert.about,
       price: expert.price,
-      mainPhoto: expert.mainPhoto,
+      mainPhotoUrl: expert.mainPhotoUrl,
       rating: expert.rating,
-      totalSessions: expert.totalSessions
+      totalSessions: expert.totalSessions,
+      status: expert.status,
+      adminVerified: expert.adminVerified,
+      telegram: expert.telegram,
+      paymentCode: expert.paymentCode
     }));
   }
 
@@ -168,15 +178,22 @@ async updateViaPost(
       login: expert.login,
       name: expert.name,
       age: expert.age,
-      status: expert.status,
+      availability: expert.availability,
       about: expert.about,
       allowedTopics: expert.allowedTopics,
       forbiddenTopics: expert.forbiddenTopics,
       price: expert.price,
-      mainPhoto: expert.mainPhoto,
-      gallery: expert.gallery,
+      mainPhotoUrl: expert.mainPhotoUrl,
+      galleryUrls: expert.galleryUrls,
       rating: expert.rating,
       totalSessions: expert.totalSessions,
+      adminVerified: expert.adminVerified,
+      status: expert.status,
+      telegram: expert.telegram,
+      otherMessengers: expert.otherMessengers,
+      adultTopics: expert.adultTopics,
+      noForbiddenTopics: expert.noForbiddenTopics,
+      paymentCode: expert.paymentCode,
       createdAt: expert.createdAt
     };
   }
@@ -185,5 +202,53 @@ async updateViaPost(
   async remove(@Param('id') id: string) {
     await this.expertsService.remove(id);
     return { message: 'Эксперт успешно удален' };
+  }
+
+  @Post(':id/moderation')
+  async requestModeration(@Param('id') id: string) {
+    console.log('📋 Запрос модерации для эксперта:', id);
+    
+    const expert = await this.expertsService.requestModeration(id);
+    console.log('✅ Статус модерации обновлен:', expert);
+    
+    return {
+      id: expert.id,
+      status: expert.status,
+      adminVerified: expert.adminVerified
+    };
+  }
+
+  // Одобрение эксперта
+  @Post('admin/:id/approve')
+  async approveExpert(@Param('id') id: string) {
+    console.log('✅ Одобрение эксперта:', id);
+    
+    const expert = await this.expertsService.approveExpert(id);
+    console.log('✅ Эксперт одобрен:', expert);
+    
+    return {
+      id: expert.id,
+      status: expert.status,
+      adminVerified: expert.adminVerified,
+      publishedAt: expert.publishedAt,
+      expiresAt: expert.expiresAt
+    };
+  }
+
+  // Отклонение эксперта
+  @Post('admin/:id/reject')
+  async rejectExpert(
+    @Param('id') id: string,
+    @Body() body: { reason: string }
+  ) {
+    console.log('❌ Отклонение эксперта:', id, 'Причина:', body.reason);
+    
+    const expert = await this.expertsService.rejectExpert(id, body.reason);
+    console.log('✅ Эксперт отклонен:', expert);
+    
+    return {
+      id: expert.id,
+      status: expert.status
+    };
   }
 }

@@ -1,13 +1,62 @@
+import { IsString, IsNumber, IsOptional, Min, IsNotEmpty, IsBoolean } from 'class-validator';
+
 export class CreateExpertDto {
-  login: string;
-  password: string;
-  name: string;
-  age: number;
-  status: string;
-  about: string;
-  allowedTopics: string;
-  forbiddenTopics: string;
-  price: number;
-  mainPhoto?: string;
-  gallery?: string[];
+  @IsString()
+  @IsNotEmpty()
+  login!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  password!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  name!: string;
+
+  @IsNumber()
+  @Min(18)
+  age!: number;
+
+  @IsString()
+  availability!: string; // Изменили status на availability
+
+  @IsString()
+  @IsOptional()
+  about?: string;
+
+  @IsString()
+  @IsOptional()
+  allowedTopics?: string;
+
+  @IsString()
+  @IsOptional()
+  forbiddenTopics?: string;
+
+  @IsNumber()
+  @Min(0)
+  price!: number;
+
+  @IsString()
+  @IsNotEmpty()
+  telegram!: string;
+
+  @IsString()
+  @IsOptional()
+  otherMessengers?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  adultTopics?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  noForbiddenTopics?: boolean;
+
+  @IsString()
+  @IsOptional()
+  paymentCode?: string;
+
+  @IsString()
+  @IsOptional()
+  status?: string; // Оставили для статуса публикации
 }

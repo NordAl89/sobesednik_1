@@ -18,7 +18,7 @@ export class Expert {
   age!: number;
 
   @Column({ default: 'Свободен' })
-  status!: string;
+  availability!: string; // Изменили с status на availability
 
   @Column('text', { nullable: true })
   about?: string;
@@ -33,16 +33,43 @@ export class Expert {
   price!: number;
 
   @Column({ nullable: true })
-  mainPhoto?: string;
+  mainPhotoUrl?: string;
 
   @Column('text', { default: '[]' })
-  gallery!: string;
+  galleryUrls!: string;
 
   @Column({ default: 0 })
   rating!: number;
 
   @Column({ default: 0 })
   totalSessions!: number;
+
+  @Column({ nullable: true })
+  telegram?: string;
+
+  @Column({ nullable: true })
+  otherMessengers?: string;
+
+  @Column({ default: false })
+  adultTopics!: boolean;
+
+  @Column({ default: false })
+  noForbiddenTopics!: boolean;
+
+  @Column({ default: false })
+  adminVerified!: boolean;
+
+  @Column({ type: 'varchar', default: 'draft' })
+  status!: 'draft' | 'pending' | 'active' | 'expired' | 'rejected'; // Оставили для статуса публикации
+
+  @Column({ nullable: true })
+  paymentCode?: string;
+
+  @Column({ type: 'datetime', nullable: true })
+  publishedAt?: Date;
+
+  @Column({ type: 'datetime', nullable: true })
+  expiresAt?: Date;
 
   @CreateDateColumn()
   createdAt!: Date;
@@ -52,8 +79,6 @@ export class Expert {
 
   @BeforeInsert()
   generateId() {
-    // Генерируем случайный 10-значный числовой ID
-    // От 1000000000 до 9999999999
     const min = 1000000000;
     const max = 9999999999;
     this.id = Math.floor(min + Math.random() * (max - min)).toString();
