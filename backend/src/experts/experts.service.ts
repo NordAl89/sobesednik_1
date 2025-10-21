@@ -198,12 +198,12 @@ export class ExpertsService {
 
     // Устанавливаем флаг, что эксперт запросил модерацию
     expert.adminVerified = false; // Сбрасываем, чтобы админ перепроверил
-    expert.status = 'pending'; // Ставим статус на рассмотрение
+    expert.status = 'pending'; // Статус на рассмотрение
 
     return await this.expertsRepository.save(expert);
   }
 
-  // Одобрение эксперта администратором
+  // Одобрение эксперта администратором - ИСПРАВЛЕННАЯ ВЕРСИЯ
   async approveExpert(expertId: string): Promise<Expert> {
     const expert = await this.expertsRepository.findOne({ where: { id: expertId } });
     if (!expert) {
@@ -213,9 +213,28 @@ export class ExpertsService {
     expert.adminVerified = true;
     expert.status = 'active';
     expert.publishedAt = new Date();
-    expert.expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // +30 дней
+    
+    // Убедитесь, что expiresAt устанавливается правильно
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 30);
+    expert.expiresAt = expiresAt;
 
-    return await this.expertsRepository.save(expert);
+    console.log('✅ Даты установлены:', {
+      publishedAt: expert.publishedAt,
+      expiresAt: expert.expiresAt,
+      expiresAtISO: expert.expiresAt.toISOString() // Добавляем для отладки
+    });
+
+    const savedExpert = await this.expertsRepository.save(expert);
+    
+    // Проверяем, что даты сохранились в базе
+    console.log('💾 Сохраненный эксперт:', {
+      id: savedExpert.id,
+      publishedAt: savedExpert.publishedAt,
+      expiresAt: savedExpert.expiresAt
+    });
+    
+    return savedExpert;
   }
 
   // Отклонение эксперта администратором
@@ -229,6 +248,51 @@ export class ExpertsService {
     // Можно добавить поле для хранения причины отклонения
 
     return await this.expertsRepository.save(expert);
+  }
+
+  // Автоматическая проверка истечения срока - ИСПРАВЛЕННАЯ ВЕРСИЯ
+  async checkAndUpdateExpiredExperts(): Promise<void> {
+    try {
+      const now = new Date();
+      console.log('🔄 Проверка истекших анкет. Текущее время:', now.toISOString());
+      
+      const expiredExperts = await this.expertsRepository
+        .createQueryBuilder('expert')
+        .where('expert.status = :status', { status: 'active' })
+        .andWhere('expert.expiresAt < :now', { now })
+        .getMany();
+
+      console.log(`📊 Найдено активных анкет с истекшим сроком: ${expiredExperts.length}`);
+
+      for (const expert of expiredExperts) {
+        console.log(`⏰ Анкета ${expert.name} (${expert.id}) истекла. expiresAt: ${expert.expiresAt}`);
+        
+        expert.status = 'expired';
+        expert.availability = 'Неактивен';
+        await this.expertsRepository.save(expert);
+        
+        console.log(`✅ Анкета эксперта ${expert.name} (${expert.id}) переведена в статус 'expired'`);
+      }
+
+      if (expiredExperts.length > 0) {
+        console.log(`🔄 Обновлено ${expiredExperts.length} анкет с истекшим сроком`);
+      }
+    } catch (error) {
+      console.error('❌ Ошибка при проверке истекших анкет:', error);
+    }
+  }
+
+  // Запуск периодической проверки (добавьте этот метод)
+  async startExpirationChecker(): Promise<void> {
+    // Проверяем каждые 6 часов
+    setInterval(() => {
+      this.checkAndUpdateExpiredExperts();
+    }, 6 * 60 * 60 * 1000);
+    
+    // Первая проверка при запуске
+    this.checkAndUpdateExpiredExperts();
+    
+    console.log('⏰ Запущен планировщик проверки истекших анкет (каждые 6 часов)');
   }
 
   // Вспомогательный метод для валидации статуса

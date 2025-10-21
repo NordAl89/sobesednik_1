@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { ExpertsService } from './experts/experts.service'; // Добавьте этот импорт
 import { join } from 'path';
 import * as express from 'express';
 
@@ -29,6 +30,10 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+
+  // Запускаем планировщик проверки истекших анкет
+  const expertsService = app.get(ExpertsService);
+  await expertsService.startExpirationChecker();
 
   await app.listen(4000);
   console.log('Server is running on http://localhost:4000');
