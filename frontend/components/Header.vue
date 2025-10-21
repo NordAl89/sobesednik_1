@@ -13,7 +13,11 @@
             👤 Личный кабинет
           </NuxtLink>
         </li>
-        <li><NuxtLink to="/admin">Админ-панель</NuxtLink></li>
+         <li>
+          <NuxtLink to="/admin-login" class="admin-link">
+            🔐 Админ-панель
+          </NuxtLink>
+        </li>
       </ul>
     </nav>
   </header>
