@@ -152,6 +152,23 @@
             >
               👁️ Подробнее
             </button>
+            <button 
+              v-if="expert.status !== 'blocked'" 
+               @click="blockExpert(expert.id)" 
+               class="action-btn block-btn"
+               title="Заблокировать анкету"
+            >
+             🚫 Заблокировать
+            </button>
+
+            <button 
+             @click="deleteExpert(expert.id)" 
+             class="action-btn delete-btn"
+             title="Удалить анкету"
+            >
+              🗑️ Удалить
+            </button>
+
           </div>
         </div>
       </div>
@@ -259,6 +276,46 @@ const contactExpert = (expert) => {
 
 const viewDetails = (expertId) => {
   router.push(`/experts/${expertId}`)
+}
+
+// Блокировка анкеты
+const blockExpert = async (expertId) => {
+  if (!confirm('Вы уверены, что хотите заблокировать эту анкету?')) return
+
+  try {
+    const response = await $fetch(`http://localhost:4000/experts/admin/${expertId}/block`, {
+      method: 'POST'
+    })
+
+    console.log('🚫 Анкета заблокирована:', response)
+
+    const index = experts.value.findIndex(e => e.id === expertId)
+    if (index !== -1) {
+      experts.value[index] = { ...experts.value[index], status: 'blocked' }
+    }
+
+    alert('Анкета заблокирована!')
+  } catch (error) {
+    console.error('❌ Ошибка блокировки:', error)
+    alert('Ошибка при блокировке анкеты: ' + (error.data?.message || error.message))
+  }
+}
+
+// Удаление анкеты
+const deleteExpert = async (expertId) => {
+  if (!confirm('Вы уверены, что хотите УДАЛИТЬ анкету? Это действие необратимо!')) return
+
+  try {
+    await $fetch(`http://localhost:4000/experts/${expertId}`, {
+      method: 'DELETE'
+    })
+
+    experts.value = experts.value.filter(e => e.id !== expertId)
+    alert('🗑️ Анкета успешно удалена!')
+  } catch (error) {
+    console.error('❌ Ошибка удаления анкеты:', error)
+    alert('Ошибка при удалении анкеты: ' + (error.data?.message || error.message))
+  }
 }
 
 // Вспомогательные функции
@@ -626,6 +683,22 @@ onMounted(() => {
 .loading-state {
   text-align: center;
   padding: 60px 20px;
+}
+
+.block-btn {
+  background: #f39c12;
+  color: white;
+}
+.block-btn:hover {
+  background: #d68910;
+}
+
+.delete-btn {
+  background: #e74c3c;
+  color: white;
+}
+.delete-btn:hover {
+  background: #c0392b;
 }
 
 .spinner {

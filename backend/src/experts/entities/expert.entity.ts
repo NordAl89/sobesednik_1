@@ -60,7 +60,7 @@ export class Expert {
   adminVerified!: boolean;
 
   @Column({ type: 'varchar', default: 'draft' })
-  status!: 'draft' | 'pending' | 'active' | 'expired' | 'rejected'; // Оставили для статуса публикации
+  status!: 'draft' | 'pending' | 'active' | 'expired' | 'rejected' | 'blocked'; // Оставили для статуса публикации
 
   @Column({ nullable: true })
   paymentCode?: string;
