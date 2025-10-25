@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsOptional, Min, IsNotEmpty, IsBoolean } from 'class-validator';
+import { IsString, IsNumber, IsOptional, Min, IsNotEmpty, IsBoolean, IsIn } from 'class-validator';
 
 export class CreateExpertDto {
   @IsString()
@@ -16,6 +16,10 @@ export class CreateExpertDto {
   @IsNumber()
   @Min(18)
   age!: number;
+
+  @IsNotEmpty()
+  @IsIn(['male', 'female'])
+  gender: 'male' | 'female';
 
   @IsString()
   availability!: string; // Изменили status на availability

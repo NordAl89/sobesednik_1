@@ -17,6 +17,9 @@ export class Expert {
   @Column()
   age!: number;
 
+  @Column({ type: 'varchar', length: 10, nullable: true })
+  gender!: 'male' | 'female' | null;
+
   @Column({ default: 'Свободен' })
   availability!: string; // Изменили с status на availability
 

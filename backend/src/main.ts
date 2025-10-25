@@ -2,24 +2,39 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { ExpertsService } from './experts/experts.service'; // Добавьте этот импорт
+import { ExpertsService } from './experts/experts.service';
 import { join } from 'path';
 import * as express from 'express';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   // Включаем CORS для фронтенда
   app.enableCors({
-    origin: 'http://localhost:3000', // Nuxt dev server
+    origin: ['http://localhost:3000', 'http://localhost:3001'], // Можно добавить несколько origin
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   });
 
   // Валидация
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true, // Удаляет поля, которых нет в DTO
+    forbidNonWhitelisted: true, // Бросает ошибку при наличии лишних полей
+    transform: true, // Преобразует типы (строки в числа и т.д.)
+  }));
 
-  // Статические файлы
-  app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
+  // Создаем папку uploads если её нет
+  const uploadsDir = join(__dirname, '..', 'uploads');
+  const fs = await import('fs');
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+    console.log('📁 Создана папка uploads');
+  }
+
+  // Статические файлы - исправленный путь
+  app.use('/uploads', express.static(uploadsDir));
 
   // Swagger документация
   const config = new DocumentBuilder()
@@ -31,12 +46,22 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  // Запускаем планировщик проверки истекших анкет
-  const expertsService = app.get(ExpertsService);
-  await expertsService.startExpirationChecker();
+  try {
+    // Запускаем планировщик проверки истекших анкет
+    const expertsService = app.get(ExpertsService);
+    await expertsService.startExpirationChecker();
+    console.log('✅ Планировщик истекших анкет запущен');
+  } catch (error) {
+    console.error('❌ Ошибка запуска планировщика:', error);
+  }
 
   await app.listen(4000);
-  console.log('Server is running on http://localhost:4000');
-  console.log('Swagger documentation: http://localhost:4000/api');
+  console.log('🚀 Server is running on http://localhost:4000');
+  console.log('📚 Swagger documentation: http://localhost:4000/api');
+  console.log('📁 Static files: http://localhost:4000/uploads');
 }
-bootstrap();
+
+bootstrap().catch(error => {
+  console.error('💥 Ошибка запуска приложения:', error);
+  process.exit(1);
+});

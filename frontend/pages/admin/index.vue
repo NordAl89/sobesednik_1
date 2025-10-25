@@ -194,6 +194,17 @@ const loadExperts = async () => {
     const response = await $fetch('http://localhost:4000/experts')
     experts.value = response
     console.log('✅ Загружено экспертов:', experts.value.length)
+    
+    // Отладочная информация
+    if (experts.value.length > 0) {
+      console.log('📋 Пример данных эксперта:', {
+        id: experts.value[0].id,
+        login: experts.value[0].login,
+        createdAt: experts.value[0].createdAt,
+        updatedAt: experts.value[0].updatedAt,
+        fullData: experts.value[0]
+      })
+    }
   } catch (error) {
     console.error('❌ Ошибка загрузки экспертов:', error)
     alert('Ошибка загрузки данных')
@@ -331,13 +342,51 @@ const getStatusText = (status) => {
 }
 
 const formatDate = (dateString) => {
-  return new Date(dateString).toLocaleDateString('ru-RU', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
+  if (!dateString) return 'Дата не указана'
+  
+  try {
+    const date = new Date(dateString)
+    
+    // Проверка на валидность даты
+    if (isNaN(date.getTime())) {
+      console.warn('Invalid date:', dateString)
+      return 'Неверный формат даты'
+    }
+    
+    return date.toLocaleDateString('ru-RU', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  } catch (error) {
+    console.error('Error formatting date:', error)
+    return 'Ошибка формата даты'
+  }
+}
+// Добавьте также функцию для отображения относительного времени
+const formatRelativeTime = (dateString) => {
+  if (!dateString) return ''
+  
+  try {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffMs = now - date
+    const diffMins = Math.floor(diffMs / (1000 * 60))
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+    
+    if (diffMins < 1) return 'только что'
+    if (diffMins < 60) return `${diffMins} мин. назад`
+    if (diffHours < 24) return `${diffHours} ч. назад`
+    if (diffDays === 1) return 'вчера'
+    if (diffDays < 7) return `${diffDays} дн. назад`
+    
+    return formatDate(dateString)
+  } catch (error) {
+    return formatDate(dateString)
+  }
 }
 
 const refreshData = () => {

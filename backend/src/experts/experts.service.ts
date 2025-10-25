@@ -11,90 +11,107 @@ export class ExpertsService {
     private expertsRepository: Repository<Expert>,
   ) {}
 
-  // Создание эксперта
-  async create(createExpertDto: CreateExpertDto): Promise<Expert> {
-    console.log('🎯 Создание эксперта с данными:', createExpertDto);
+  // Создание эксперта (без файлов)
+async create(createExpertDto: CreateExpertDto): Promise<Expert> {
+  console.log('🎯 Создание эксперта с данными:', createExpertDto);
 
-    const existingExpertByLogin = await this.expertsRepository.findOne({
-      where: { login: createExpertDto.login },
-    });
+  const existingExpertByLogin = await this.expertsRepository.findOne({
+    where: { login: createExpertDto.login },
+  });
 
-    if (existingExpertByLogin) {
-      throw new ConflictException('Эксперт с таким логином уже существует');
-    }
-
-    const expert = new Expert();
-    expert.login = createExpertDto.login;
-    expert.password = createExpertDto.password;
-    expert.name = createExpertDto.name;
-    expert.age = createExpertDto.age;
-    expert.availability = createExpertDto.availability;
-    expert.about = createExpertDto.about || '';
-    expert.allowedTopics = createExpertDto.allowedTopics || '';
-    expert.forbiddenTopics = createExpertDto.forbiddenTopics || '';
-    expert.price = createExpertDto.price;
-    expert.telegram = createExpertDto.telegram;
-    expert.otherMessengers = createExpertDto.otherMessengers || '';
-    expert.adultTopics = createExpertDto.adultTopics || false;
-    expert.noForbiddenTopics = createExpertDto.noForbiddenTopics || false;
-    expert.status = this.getValidStatus(createExpertDto.status);
-
-    const savedExpert = await this.expertsRepository.save(expert);
-
-    await this.saveData(); // заглушка, не влияет на работу
-
-    console.log('✅ Эксперт создан. ID:', savedExpert.id);
-    return savedExpert;
+  if (existingExpertByLogin) {
+    throw new ConflictException('Эксперт с таким логином уже существует');
   }
 
-  // Создание эксперта с файлами
-  async createWithFiles(
-    createExpertDto: any,
-    mainPhoto: Express.Multer.File,
-    galleryFiles: Express.Multer.File[],
-  ): Promise<Expert> {
-    console.log('🎯 Создание эксперта с файлами:', createExpertDto);
+  const expert = new Expert();
+  expert.login = createExpertDto.login;
+  expert.password = createExpertDto.password;
+  expert.name = createExpertDto.name;
+  expert.age = createExpertDto.age;
+  expert.gender = createExpertDto.gender;
+  expert.availability = createExpertDto.availability;
+  expert.about = createExpertDto.about || '';
+  expert.allowedTopics = createExpertDto.allowedTopics || '';
+  expert.forbiddenTopics = createExpertDto.forbiddenTopics || '';
+  expert.price = createExpertDto.price;
+  expert.telegram = createExpertDto.telegram
+    ? createExpertDto.telegram.startsWith('@')
+      ? createExpertDto.telegram
+      : '@' + createExpertDto.telegram
+    : null;
+  expert.otherMessengers = createExpertDto.otherMessengers || '';
+  expert.adultTopics = createExpertDto.adultTopics || false;
+  expert.noForbiddenTopics = createExpertDto.noForbiddenTopics || false;
+  expert.paymentCode = createExpertDto.paymentCode;
+  expert.status = this.getValidStatus(createExpertDto.status);
 
-    const existingExpertByLogin = await this.expertsRepository.findOne({
-      where: { login: createExpertDto.login },
-    });
+  const savedExpert = await this.expertsRepository.save(expert);
+  await this.saveData();
 
-    if (existingExpertByLogin) {
-      throw new ConflictException('Эксперт с таким логином уже существует');
-    }
+  // повторное получение — чтобы вернулись createdAt и updatedAt
+  const fullExpert = await this.findOne(savedExpert.id);
 
-    const expert = new Expert();
-    expert.login = createExpertDto.login;
-    expert.password = createExpertDto.password;
-    expert.name = createExpertDto.name;
-    expert.age = createExpertDto.age;
-    expert.availability = createExpertDto.availability;
-    expert.about = createExpertDto.about || '';
-    expert.telegram = createExpertDto.telegram;
-    expert.otherMessengers = createExpertDto.otherMessengers || '';
-    expert.allowedTopics = createExpertDto.allowedTopics || '';
-    expert.forbiddenTopics = createExpertDto.forbiddenTopics || '';
-    expert.price = createExpertDto.price;
-    expert.adultTopics = createExpertDto.adultTopics || false;
-    expert.noForbiddenTopics = createExpertDto.noForbiddenTopics || false;
-    expert.paymentCode = createExpertDto.paymentCode;
-    expert.status = 'pending';
+  console.log('✅ Эксперт создан. ID:', fullExpert.id);
+  return fullExpert;
+}
 
-    if (mainPhoto) {
-      expert.mainPhotoUrl = `/uploads/${mainPhoto.filename}`;
-    }
 
-    if (galleryFiles && galleryFiles.length > 0) {
-      const galleryUrls = galleryFiles.map(file => `/uploads/${file.filename}`);
-      expert.galleryUrls = JSON.stringify(galleryUrls);
-    }
+// Создание эксперта с файлами
+async createWithFiles(
+  createExpertDto: any,
+  mainPhoto: Express.Multer.File,
+  galleryFiles: Express.Multer.File[],
+): Promise<Expert> {
+  console.log('🎯 Создание эксперта с файлами:', createExpertDto);
 
-    const savedExpert = await this.expertsRepository.save(expert);
-    await this.saveData(); // заглушка
+  const existingExpertByLogin = await this.expertsRepository.findOne({
+    where: { login: createExpertDto.login },
+  });
 
-    console.log('✅ Эксперт создан с файлами. ID:', savedExpert.id);
-    return savedExpert;
+  if (existingExpertByLogin) {
+    throw new ConflictException('Эксперт с таким логином уже существует');
   }
+
+  const expert = new Expert();
+  expert.login = createExpertDto.login;
+  expert.password = createExpertDto.password;
+  expert.name = createExpertDto.name;
+  expert.age = createExpertDto.age;
+  expert.gender = createExpertDto.gender;
+  expert.availability = createExpertDto.availability;
+  expert.about = createExpertDto.about || '';
+  expert.telegram = createExpertDto.telegram
+    ? createExpertDto.telegram.startsWith('@')
+      ? createExpertDto.telegram
+      : '@' + createExpertDto.telegram
+    : null;
+  expert.otherMessengers = createExpertDto.otherMessengers || '';
+  expert.allowedTopics = createExpertDto.allowedTopics || '';
+  expert.forbiddenTopics = createExpertDto.forbiddenTopics || '';
+  expert.price = createExpertDto.price;
+  expert.adultTopics = createExpertDto.adultTopics || false;
+  expert.noForbiddenTopics = createExpertDto.noForbiddenTopics || false;
+  expert.paymentCode = createExpertDto.paymentCode;
+  expert.status = 'pending';
+
+  if (mainPhoto) {
+    expert.mainPhotoUrl = `/uploads/${mainPhoto.filename}`;
+  }
+
+  if (galleryFiles && galleryFiles.length > 0) {
+    const galleryUrls = galleryFiles.map(file => `/uploads/${file.filename}`);
+    expert.galleryUrls = JSON.stringify(galleryUrls);
+  }
+
+  const savedExpert = await this.expertsRepository.save(expert);
+  await this.saveData();
+
+  // обязательно получаем из базы с заполненными датами
+  const fullExpert = await this.findOne(savedExpert.id);
+
+  console.log('✅ Эксперт создан с файлами. ID:', fullExpert.id);
+  return fullExpert;
+}
 
   // Валидация эксперта для входа
   async validateExpert(login: string, password: string): Promise<Expert | null> {

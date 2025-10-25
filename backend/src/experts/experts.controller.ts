@@ -6,8 +6,11 @@ import {
   Param, 
   Delete, 
   UnauthorizedException,
-  Patch 
+  Patch,
+  UseInterceptors,
+  UploadedFiles
 } from '@nestjs/common';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ExpertsService } from './experts.service';
 import { CreateExpertDto } from './dto/create-expert.dto';
 import { LoginExpertDto } from './dto/login-expert.dto';
@@ -31,6 +34,7 @@ export class ExpertsController {
       login: expert.login,
       name: expert.name,
       age: expert.age,
+      gender: expert.gender,
       availability: expert.availability,
       about: expert.about,
       allowedTopics: expert.allowedTopics,
@@ -61,6 +65,65 @@ export class ExpertsController {
       price: expert.price,
       mainPhotoUrl: expert.mainPhotoUrl,
       galleryUrls: expert.galleryUrls,
+      createdAt: expert.createdAt
+    };
+  }
+
+  @Post('with-files')
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'mainPhoto', maxCount: 1 },
+      { name: 'gallery', maxCount: 10 }
+    ], {
+      limits: {
+        fileSize: 10 * 1024 * 1024, // 10MB limit
+      },
+      fileFilter: (req, file, cb) => {
+        if (file.mimetype.startsWith('image/') || file.mimetype.startsWith('video/')) {
+          cb(null, true);
+        } else {
+          cb(new Error('Only images and videos are allowed'), false);
+        }
+      },
+    })
+  )
+  async createWithFiles(
+    @UploadedFiles() files: { mainPhoto?: Express.Multer.File[], gallery?: Express.Multer.File[] },
+    @Body() createExpertDto: CreateExpertDto
+  ) {
+    console.log('📨 Получен запрос с файлами:', createExpertDto);
+    console.log('📁 Файлы:', files);
+
+    const mainPhoto = files?.mainPhoto?.[0];
+    const galleryFiles = files?.gallery || [];
+
+    const expert = await this.expertsService.createWithFiles(
+      createExpertDto, 
+      mainPhoto, 
+      galleryFiles
+    );
+
+    return {
+      id: expert.id,
+      login: expert.login,
+      name: expert.name,
+      age: expert.age,
+      gender: expert.gender,
+      availability: expert.availability,
+      about: expert.about,
+      telegram: expert.telegram,
+      otherMessengers: expert.otherMessengers,
+      allowedTopics: expert.allowedTopics,
+      forbiddenTopics: expert.forbiddenTopics,
+      price: expert.price,
+      mainPhotoUrl: expert.mainPhotoUrl,
+      galleryUrls: expert.galleryUrls ? JSON.parse(expert.galleryUrls) : [],
+      rating: expert.rating,
+      totalSessions: expert.totalSessions,
+      adultTopics: expert.adultTopics,
+      noForbiddenTopics: expert.noForbiddenTopics,
+      status: expert.status,
+      paymentCode: expert.paymentCode,
       createdAt: expert.createdAt
     };
   }
@@ -123,6 +186,22 @@ export class ExpertsController {
     };
   }
 
+  // 🚫 Блокировка анкеты админом
+  @Post('admin/:id/block')
+  async blockExpert(@Param('id') id: string) {
+    console.log('🚫 Блокировка анкеты эксперта:', id);
+
+    const expert = await this.expertsService.blockExpert(id);
+
+    console.log('✅ Эксперт заблокирован:', expert);
+
+    return {
+      id: expert.id,
+      status: expert.status,
+      adminVerified: expert.adminVerified
+    };
+  }
+
   @Get('profile/:id')
   async getProfile(@Param('id') id: string) {
     const expert = await this.expertsService.getProfile(id);
@@ -155,8 +234,10 @@ export class ExpertsController {
     const experts = await this.expertsService.findAll();
     return experts.map(expert => ({
       id: expert.id,
+      login: expert.login,
       name: expert.name,
       age: expert.age,
+      gender: expert.gender,
       availability: expert.availability,
       about: expert.about,
       price: expert.price,
@@ -166,8 +247,26 @@ export class ExpertsController {
       status: expert.status,
       adminVerified: expert.adminVerified,
       telegram: expert.telegram,
-      paymentCode: expert.paymentCode
+      otherMessengers: expert.otherMessengers,
+      allowedTopics: expert.allowedTopics,
+      forbiddenTopics: expert.forbiddenTopics,
+      adultTopics: expert.adultTopics,
+      noForbiddenTopics: expert.noForbiddenTopics,
+      paymentCode: expert.paymentCode,
+      createdAt: expert.createdAt,
+      updatedAt: expert.updatedAt
     }));
+  }
+
+  @Get('debug/:id')
+  async debugExpert(@Param('id') id: string) {
+    const expert = await this.expertsService.findOne(id);
+    return {
+      rawData: expert,
+      createdAt: expert.createdAt,
+      createdAtType: typeof expert.createdAt,
+      login: expert.login
+    };
   }
 
   @Get(':id')

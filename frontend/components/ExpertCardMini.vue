@@ -4,15 +4,18 @@
     :class="statusClass"
     @click="$emit('click', expert.id)"
   >
+    <!-- Главное фото -->
     <img
-      :src="expert.mainPhotoUrl || '/default-photo.jpg'"
-      alt="Фото"
+      :src="getImageUrl(expert.mainPhotoUrl) || getDefaultAvatar()"
+      alt="Фото собеседника"
       class="main-photo"
     />
 
     <h3>{{ expert.name }}</h3>
     <p>Возраст: {{ expert.age }}</p>
-    <p>Статус: {{ expert.status }}</p>
+    <p>Пол: {{ expert.gender === 'male' ? 'Мужской' : 'Женский' }}</p>
+    <p>Статус: {{ getStatusText(expert.availability) }}</p>
+    <p class="price">{{ expert.price }} руб/час</p>
 
     <p v-if="expert.allowedTopics">Разрешённые темы: {{ expert.allowedTopics }}</p>
     <p v-if="expert.forbiddenTopics">Запрещённые темы: {{ expert.forbiddenTopics }}</p>
@@ -38,6 +41,25 @@ const statusClass = computed(() => {
   if (props.expert.status === 'active' || props.expert.status === 'Свободен') return 'free'
   return ''
 })
+
+const getStatusText = (availability) => {
+  return availability === 'Занят' ? 'Занят' : 'Свободен'
+}
+
+// Функция для получения правильного URL изображения
+const getImageUrl = (url) => {
+  if (!url) return null
+  // Если URL уже полный, возвращаем как есть
+  if (url.startsWith('http')) return url
+  // Иначе добавляем базовый URL бэкенда
+  return `http://localhost:4000${url}`
+}
+
+// Функция для аватарки по умолчанию
+const getDefaultAvatar = () => {
+  // Используем локальный файл из папки public или data URL
+  return '/images/default-avatar.jpg' // положите файл в public/images/
+}
 </script>
 
 <style scoped>
@@ -77,8 +99,28 @@ const statusClass = computed(() => {
 
 .main-photo {
   width: 100%;
-  height: 150px;
+  height: 180px;
   object-fit: cover;
   border-radius: 8px;
+  margin-bottom: 10px;
 }
+
+h3 {
+  margin: 0 0 8px 0;
+  color: #2c3e50;
+  font-size: 18px;
+}
+
+p {
+  margin: 4px 0;
+  color: #555;
+  font-size: 14px;
+}
+
+.price {
+  color: #27ae60;
+  font-weight: bold;
+  font-size: 16px;
+}
+
 </style>

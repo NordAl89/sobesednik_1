@@ -1,6 +1,6 @@
 <template>
   <div class="expert-registration">
-    <form @submit.prevent="handleSubmit" class="expert-form">
+    <form @submit.prevent="handleSubmit" class="expert-form" enctype="multipart/form-data">
       <h2>{{ isEditMode ? 'Редактирование профиля' : 'Регистрация собеседника' }}</h2>
 
       <!-- Основные поля -->
@@ -26,7 +26,16 @@
           Возраст *
           <input v-model.number="form.age" type="number" min="18" required />
         </label>
-
+        
+        <label>
+          Пол *
+          <select v-model="form.gender" required>
+            <option value="">Выберите пол</option>
+            <option value="male">Мужской</option>
+            <option value="female">Женский</option>
+          </select>
+        </label>
+        
         <label>
           Telegram *
           <input v-model="form.telegram" type="text" placeholder="@username" required />
@@ -81,6 +90,62 @@
             <span>Запрещённых тем нет</span>
           </label>
         </div>
+      </div>
+
+      <!-- Секция загрузки файлов -->
+      <div class="form-section">
+        <h3>Фотографии и видео</h3>
+
+        <!-- Главное фото -->
+        <label>
+          Главное фото (аватар) *
+          <input 
+            type="file" 
+            @change="handleMainPhotoChange"
+            accept="image/*"
+            :required="!isEditMode"
+          />
+          <small>Рекомендуемый размер: 500x500px, формат JPG/PNG</small>
+          <div v-if="mainPhotoPreview" class="image-preview">
+            <img :src="mainPhotoPreview" alt="Предпросмотр главного фото" />
+          </div>
+        </label>
+
+        <!-- Галерея -->
+        <label>
+          Галерея (до 10 файлов)
+          <input 
+            type="file" 
+            multiple 
+            @change="handleGalleryChange"
+            accept="image/*,video/*"
+            ref="galleryInput"
+          />
+          <small>Можно загружать фото и видео до 10MB каждый. Максимум 10 файлов.</small>
+          
+          <!-- Предпросмотр галереи -->
+          <div v-if="galleryPreviews.length" class="gallery-previews">
+            <div 
+              v-for="(preview, index) in galleryPreviews" 
+              :key="index"
+              class="gallery-preview-item"
+            >
+              <img v-if="preview.type === 'image'" :src="preview.url" :alt="`Галерея ${index + 1}`" />
+              <video v-else controls :src="preview.url"></video>
+              <button 
+                type="button" 
+                @click="removeGalleryFile(index)"
+                class="remove-file-btn"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+          
+          <div class="file-count">
+            Загружено файлов: {{ galleryFiles.length }}/10
+          </div>
+        </label>
       </div>
 
       <!-- Кнопки действий -->
@@ -151,6 +216,7 @@ const form = ref({
   password: '',
   name: '',
   age: null,
+  gender: '', // Добавлено поле пола
   availability: 'Свободен',
   about: '',
   telegram: '',
@@ -162,6 +228,13 @@ const form = ref({
   noForbiddenTopics: false
 })
 
+// Данные для файлов
+const mainPhotoFile = ref(null)
+const mainPhotoPreview = ref('')
+const galleryFiles = ref([])
+const galleryPreviews = ref([])
+const galleryInput = ref(null)
+
 // Валидация формы
 const isFormValid = computed(() => {
   const requiredFields = [
@@ -169,6 +242,7 @@ const isFormValid = computed(() => {
     form.value.password,
     form.value.name,
     form.value.age,
+    form.value.gender,
     form.value.telegram,
     form.value.about,
     form.value.allowedTopics,
@@ -191,6 +265,11 @@ onMounted(async () => {
           form.value[key] = existingExpert.value[key]
         }
       })
+      
+      // Если есть существующее фото, показываем его
+      if (existingExpert.value.mainPhotoUrl) {
+        mainPhotoPreview.value = `http://localhost:4000${existingExpert.value.mainPhotoUrl}`
+      }
     } catch (error) {
       console.error('Ошибка загрузки данных эксперта:', error)
     }
@@ -203,6 +282,77 @@ const generatePaymentCode = () => {
   return `${form.value.login}${randomDigits}`
 }
 
+// Обработчик главного фото
+const handleMainPhotoChange = (event) => {
+  const file = event.target.files[0]
+  if (!file) return
+
+  // Проверка размера
+  if (file.size > 10 * 1024 * 1024) {
+    alert('Файл слишком большой. Максимальный размер: 10MB')
+    event.target.value = ''
+    return
+  }
+
+  mainPhotoFile.value = file
+  
+  // Создание preview
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    mainPhotoPreview.value = e.target.result
+  }
+  reader.readAsDataURL(file)
+}
+
+// Обработчик галереи
+const handleGalleryChange = (event) => {
+  const files = Array.from(event.target.files)
+  
+  // Проверка количества файлов
+  if (galleryFiles.value.length + files.length > 10) {
+    alert('Максимум можно загрузить 10 файлов')
+    event.target.value = ''
+    return
+  }
+
+  files.forEach(file => {
+    // Проверка размера
+    if (file.size > 10 * 1024 * 1024) {
+      alert(`Файл ${file.name} слишком большой. Максимальный размер: 10MB`)
+      return
+    }
+
+    // Проверка типа
+    if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+      alert(`Файл ${file.name} должен быть изображением или видео`)
+      return
+    }
+
+    galleryFiles.value.push(file)
+    
+    // Создание preview
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      galleryPreviews.value.push({
+        url: e.target.result,
+        type: file.type.startsWith('image/') ? 'image' : 'video'
+      })
+    }
+    reader.readAsDataURL(file)
+  })
+
+  // Очистка input
+  if (galleryInput.value) {
+    galleryInput.value.value = ''
+  }
+}
+
+// Удаление файла из галереи
+const removeGalleryFile = (index) => {
+  galleryFiles.value.splice(index, 1)
+  galleryPreviews.value.splice(index, 1)
+}
+
 // Основная функция отправки
 const handleSubmit = async () => {
   if (!isFormValid.value) {
@@ -210,11 +360,17 @@ const handleSubmit = async () => {
     return
   }
 
+  // Проверка главного фото только для новой регистрации
+  if (!mainPhotoFile.value && !isEditMode.value) {
+    alert('Пожалуйста, загрузите главное фото')
+    return
+  }
+
   loading.value = true
 
   try {
     if (isEditMode.value && existingExpert.value) {
-      // Режим редактирования
+      // Режим редактирования (без файлов для простоты)
       await expertsStore.updateExpertProfile(existingExpert.value.id, form.value)
       await navigateTo(`/expert-profile/${existingExpert.value.id}`)
     } else {
@@ -230,19 +386,36 @@ const handleSubmit = async () => {
   }
 }
 
-// Подтверждение оплаты
+// Подтверждение оплаты с отправкой файлов
 const confirmPayment = async () => {
   paymentLoading.value = true
   
   try {
-    // Создаем эксперта со статусом pending
-    const expertData = {
-      ...form.value,
-      paymentCode: paymentCode.value,
-      status: 'pending'
+    // Создаем FormData для отправки файлов
+    const formData = new FormData()
+    
+    // Добавляем все поля формы
+    Object.keys(form.value).forEach(key => {
+      if (form.value[key] !== null && form.value[key] !== undefined) {
+        formData.append(key, form.value[key])
+      }
+    })
+    
+    // Добавляем файлы
+    if (mainPhotoFile.value) {
+      formData.append('mainPhoto', mainPhotoFile.value)
     }
     
-    await expertsStore.addExpert(expertData)
+    galleryFiles.value.forEach((file) => {
+      formData.append('gallery', file)
+    })
+    
+    // Добавляем дополнительные данные
+    formData.append('paymentCode', paymentCode.value)
+    formData.append('status', 'pending')
+    
+    // Отправляем с файлами
+    await expertsStore.addExpertWithFiles(formData)
     showPaymentModal.value = false
     await navigateTo('/')
     alert('Анкета отправлена на модерацию! После проверки оплаты она будет опубликована.')
@@ -430,5 +603,66 @@ small {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+}
+
+/* Добавьте стили для preview */
+.image-preview {
+  margin-top: 10px;
+}
+
+.image-preview img {
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+}
+
+.gallery-previews {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.gallery-preview-item {
+  position: relative;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.gallery-preview-item img,
+.gallery-preview-item video {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+}
+
+.remove-file-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: rgba(255, 0, 0, 0.7);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.file-count {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #666;
+}
+
+input[type="file"] {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: white;
 }
 </style>

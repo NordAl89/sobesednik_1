@@ -9,30 +9,34 @@ export const useExpertsStore = defineStore('experts', {
 
   actions: {
     async addExpert(expert) {
-      this.loading = true
+      this.loading = true;
       
       try {
         console.log('📤 Отправка данных на сервер...', expert);
-        
+
+        if (!expert.paymentCode) {
+          console.warn('⚠️ paymentCode отсутствует, генерируем локально');
+          const randomDigits = Math.floor(100 + Math.random() * 900);
+          expert.paymentCode = `${expert.login}${randomDigits}`;
+        }
+
         const response = await $fetch('http://localhost:4000/experts', {
           method: 'POST',
           body: expert
-        })
+        });
 
         console.log('✅ Ответ от сервера:', response);
-        
-        // Сохраняем в локальное состояние
-        this.experts.push(response)
-        
+
+        this.experts.push(response);
+
         if (process.client) {
-          localStorage.setItem('experts', JSON.stringify(this.experts))
+          localStorage.setItem('experts', JSON.stringify(this.experts));
         }
 
-        return response
-        
+        return response;
       } catch (error) {
         console.error('💥 Ошибка при создании эксперта:', error);
-        
+
         // Fallback: сохраняем локально
         console.log('🔄 Сохранение локально...');
         const localExpert = {
@@ -44,16 +48,68 @@ export const useExpertsStore = defineStore('experts', {
           status: 'draft',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
-        }
-        this.experts.push(localExpert)
-        
+        };
+
+        this.experts.push(localExpert);
+
         if (process.client) {
-          localStorage.setItem('experts', JSON.stringify(this.experts))
+          localStorage.setItem('experts', JSON.stringify(this.experts));
         }
-        
+
         return localExpert;
       } finally {
-        this.loading = false
+        this.loading = false;
+      }
+    },
+
+    // ДОБАВЬТЕ ЭТОТ МЕТОД
+    async addExpertWithFiles(formData) {
+      this.loading = true;
+      
+      try {
+        console.log('📤 Отправка данных с файлами на сервер...');
+
+        const response = await $fetch('http://localhost:4000/experts/with-files', {
+          method: 'POST',
+          body: formData
+        });
+
+        console.log('✅ Эксперт создан с файлами:', response);
+
+        this.experts.push(response);
+
+        if (process.client) {
+          localStorage.setItem('experts', JSON.stringify(this.experts));
+        }
+
+        return response;
+      } catch (error) {
+        console.error('💥 Ошибка при создании эксперта с файлами:', error);
+        
+        // Fallback: сохраняем локально без файлов
+        console.log('🔄 Сохранение локально без файлов...');
+        const expertData = {
+          login: formData.get('login'),
+          password: formData.get('password'),
+          name: formData.get('name'),
+          age: parseInt(formData.get('age')),
+          gender: formData.get('gender'),
+          availability: formData.get('availability'),
+          about: formData.get('about'),
+          telegram: formData.get('telegram'),
+          otherMessengers: formData.get('otherMessengers'),
+          allowedTopics: formData.get('allowedTopics'),
+          forbiddenTopics: formData.get('forbiddenTopics'),
+          price: parseFloat(formData.get('price')),
+          adultTopics: formData.get('adultTopics') === 'true',
+          noForbiddenTopics: formData.get('noForbiddenTopics') === 'true',
+          paymentCode: formData.get('paymentCode'),
+          status: 'pending'
+        };
+
+        return await this.addExpert(expertData);
+      } finally {
+        this.loading = false;
       }
     },
 
@@ -92,7 +148,6 @@ export const useExpertsStore = defineStore('experts', {
       try {
         console.log('📡 Отправка обновления на сервер...', { expertId, updateData });
         
-        // Используем POST эндпоинт для обновления
         const response = await $fetch(`http://localhost:4000/experts/${expertId}/update`, {
           method: 'POST',
           body: updateData
@@ -100,13 +155,11 @@ export const useExpertsStore = defineStore('experts', {
 
         console.log('✅ Ответ от сервера:', response);
         
-        // Обновляем локальное состояние
         const index = this.experts.findIndex(e => e.id === expertId);
         if (index !== -1) {
           this.experts[index] = { ...this.experts[index], ...response };
         }
         
-        // Обновляем текущего эксперта если это он
         if (this.currentExpert && this.currentExpert.id === expertId) {
           this.currentExpert = { ...this.currentExpert, ...response };
           if (process.client) {
@@ -114,7 +167,6 @@ export const useExpertsStore = defineStore('experts', {
           }
         }
         
-        // Сохраняем в localStorage
         if (process.client) {
           localStorage.setItem('experts', JSON.stringify(this.experts));
         }
@@ -123,7 +175,6 @@ export const useExpertsStore = defineStore('experts', {
       } catch (error) {
         console.error('❌ Ошибка обновления профиля:', error);
         
-        // Fallback: локальное сохранение
         const index = this.experts.findIndex(e => e.id === expertId);
         if (index !== -1) {
           this.experts[index] = { ...this.experts[index], ...updateData };
@@ -146,7 +197,6 @@ export const useExpertsStore = defineStore('experts', {
 
         console.log('✅ Ответ на запрос модерации:', response);
         
-        // Обновляем локальное состояние
         const index = this.experts.findIndex(e => e.id === expertId);
         if (index !== -1) {
           this.experts[index] = { ...this.experts[index], ...response };
@@ -174,11 +224,9 @@ export const useExpertsStore = defineStore('experts', {
       try {
         const response = await $fetch('http://localhost:4000/experts')
         
-        // Обновляем локальное состояние данными с сервера
         this.experts = response.map(serverExpert => {
           const localExpert = this.experts.find(e => e.id === serverExpert.id);
           
-          // Объединяем данные: приоритет у серверных, но сохраняем локальные reviews и sessions если они есть
           return {
             ...serverExpert,
             reviews: localExpert?.reviews || serverExpert.reviews || [],
@@ -192,7 +240,6 @@ export const useExpertsStore = defineStore('experts', {
       } catch (error) {
         console.error('Ошибка синхронизации с сервером:', error);
         
-        // Fallback: используем локальные данные
         if (process.client) {
           const localExperts = localStorage.getItem('experts');
           if (localExperts) {
@@ -206,17 +253,14 @@ export const useExpertsStore = defineStore('experts', {
       return this.experts.find(e => e.id == id);
     },
 
-    // Новый метод для получения экспертов по статусу (для админ-панели)
     getExpertsByStatus(status) {
       return this.experts.filter(expert => expert.status === status);
     },
 
-    // Метод для получения ожидающих модерации экспертов
     getPendingExperts() {
       return this.experts.filter(expert => expert.status === 'pending');
     },
 
-    // Метод для получения активных экспертов
     getActiveExperts() {
       return this.experts.filter(expert => expert.status === 'active');
     }
@@ -224,20 +268,10 @@ export const useExpertsStore = defineStore('experts', {
 
   getters: {
     isLoggedIn: (state) => !!state.currentExpert,
-    
-    // Новые геттеры для удобства
     currentExpertId: (state) => state.currentExpert?.id,
-    
     isCurrentExpertAdminVerified: (state) => state.currentExpert?.adminVerified || false,
-    
-    // Геттер для проверки, может ли текущий эксперт редактировать профиль
     canEditProfile: (state) => {
       if (!state.currentExpert) return false;
-      
-      // Эксперт может редактировать свой профиль если:
-      // - статус 'draft' (черновик)
-      // - статус 'active' (активный)
-      // - статус 'pending' (ожидает модерации)
       const editableStatuses = ['draft', 'active', 'pending'];
       return editableStatuses.includes(state.currentExpert.status);
     }
