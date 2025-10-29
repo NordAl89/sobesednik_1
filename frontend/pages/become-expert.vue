@@ -65,13 +65,13 @@
         </label>
 
         <label>
-          Разрешённые темы *
+          Предпочтительные темы *
           <input v-model="form.allowedTopics" type="text" required />
         </label>
 
         <label>
-          Запрещённые темы *
-          <input v-model="form.forbiddenTopics" type="text" required />
+          Запрещённые темы 
+          <input v-model="form.forbiddenTopics" type="text" placeholder="Пропустите это поле, если вы, действительно, готовы обсуждать любые темы" />
         </label>
 
         <label>

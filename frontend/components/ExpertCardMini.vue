@@ -5,14 +5,17 @@
     @click="$emit('click', expert.id)"
   >
     <!-- Главное фото -->
-    <img
-      :src="getImageUrl(expert.mainPhotoUrl) || getDefaultAvatar()"
-      alt="Фото собеседника"
-      class="main-photo"
-    />
+    <NuxtImg
+  :src="getImageUrl(expert.mainPhotoUrl) || getDefaultAvatar()"
+  alt="Фото собеседника"
+  class="main-photo"
+  width="220"
+  height="180"
+  format="webp"
+/>
 
     <h3>{{ expert.name }}</h3>
-    <p>Возраст: {{ expert.age }}</p>
+    <p>Возраст: {{ expert.age }} {{ getAgeWord(expert.age) }}</p>
     <p>Пол: {{ expert.gender === 'male' ? 'Мужской' : 'Женский' }}</p>
     <p>Статус: {{ getStatusText(expert.availability) }}</p>
     <p class="price">{{ expert.price }} руб/час</p>
@@ -46,20 +49,36 @@ const getStatusText = (availability) => {
   return availability === 'Занят' ? 'Занят' : 'Свободен'
 }
 
-// Функция для получения правильного URL изображения
-const getImageUrl = (url) => {
-  if (!url) return null
-  // Если URL уже полный, возвращаем как есть
-  if (url.startsWith('http')) return url
-  // Иначе добавляем базовый URL бэкенда
-  return `http://localhost:4000${url}`
+// Функция для правильного склонения слова "год"
+const getAgeWord = (age) => {
+  if (!age && age !== 0) return 'лет'
+
+  const lastDigit = age % 10
+  const lastTwoDigits = age % 100
+
+  if (lastTwoDigits >= 11 && lastTwoDigits <= 14) return 'лет'
+
+  switch (lastDigit) {
+    case 1:
+      return 'год'
+    case 2:
+    case 3:
+    case 4:
+      return 'года'
+    default:
+      return 'лет'
+  }
 }
 
-// Функция для аватарки по умолчанию
-const getDefaultAvatar = () => {
-  // Используем локальный файл из папки public или data URL
-  return '/images/default-avatar.jpg' // положите файл в public/images/
+// Формирование URL для изображений
+function getImageUrl(url) {
+  if (!url) return null
+  return url.startsWith('/uploads')
+    ? `http://localhost:4000${url}`  // твой backend
+    : `http://localhost:4000/uploads/${url}`
 }
+
+const getDefaultAvatar = () => '/images/default-avatar.jpg' // из public
 </script>
 
 <style scoped>
@@ -70,9 +89,9 @@ const getDefaultAvatar = () => {
   margin: 8px;
   cursor: pointer;
   width: 220px;
-  background-color: #fff;
+  background-color: #edeef0;
   transition: 0.3s ease;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 .expert-card-mini:hover {
   transform: translateY(-3px);
@@ -80,7 +99,7 @@ const getDefaultAvatar = () => {
 
 /* Для свободных */
 .expert-card-mini.free {
-  border-color: #27ae60;
+  border-color: #99cdf0;
   box-shadow: 0 0 10px rgba(39, 174, 96, 0.3);
 }
 
@@ -122,5 +141,4 @@ p {
   font-weight: bold;
   font-size: 16px;
 }
-
 </style>

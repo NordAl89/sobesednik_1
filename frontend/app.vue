@@ -25,6 +25,8 @@ import Footer from '~/components/Footer.vue'
 main.content {
   flex: 1;
   padding: 20px;
+ background: linear-gradient(to bottom, #eedbe5 0%, #fceabb 70%, #f7e7c7 100%);
+  background-attachment: fixed;
 }
 
 /* Header */

@@ -21,6 +21,26 @@ export default defineNuxtConfig({
     '~/plugins/pinia.js' // наш плагин Pinia
   ],
 
+   modules: [
+    '@nuxt/image'
+  ],  
+  
+  image: {
+    inject: true,
+    quality: 80,
+    format: ['webp', 'jpg'],
+    screens: {
+      xs: 320,
+      sm: 640,
+      md: 768,
+      lg: 1024,
+      xl: 1280,
+      xxl: 1536,
+    },   
+    
+  },
+
+
   // Стили по умолчанию
   css: [
     '~/assets/main.css'
