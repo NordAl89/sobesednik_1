@@ -350,4 +350,10 @@ export class ExpertsController {
       status: expert.status
     };
   }
+// уведомление телеграм
+  @Post(':id/notify')
+async notifyExpert(@Param('id') id: string, @Body('message') message: string) {
+  await this.expertsService.notifyExpertViaTelegram(id, message);
+  return { success: true };
+}
 }

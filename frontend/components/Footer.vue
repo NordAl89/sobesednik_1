@@ -9,7 +9,7 @@
 
 <style scoped>
 footer {
-  background-color: #f8f8f8;
+  background: linear-gradient(0deg, #fdf3d1 0%, #ffd79a 40%, #c6a4f5 100%);
   padding: 10px 20px;
   text-align: center;
   box-shadow: 0 -2px 4px rgba(0,0,0,0.1);

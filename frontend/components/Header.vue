@@ -2,7 +2,12 @@
   <header class="header">
     <div class="header-container">
       <div class="logo">
-        <NuxtLink to="/">🤝 Собеседник</NuxtLink>
+        <NuxtLink to="/" @click="closeMenu">
+          <NuxtImg
+          src="/images/sobesednik_logo.png" alt="Собеседник" class="logo-img"
+          />
+          <!-- <img src="/images/sobesed_logo.png" alt="Собеседник" class="logo-img" /> -->
+        </NuxtLink>
       </div>
 
       <!-- Бургер для мобильной версии -->
@@ -24,13 +29,13 @@
             <NuxtLink :to="`/expert-profile/${store.currentExpert.id}`"
                       class="profile-link"
                       @click="closeMenu">
-              👤 Личный кабинет
+              Личный кабинет
             </NuxtLink>
           </li>
 
           <li>
             <NuxtLink to="/admin-login" class="admin-link" @click="closeMenu">
-              🔐 Админ-панель
+              Админ-панель
             </NuxtLink>
           </li>
         </ul>
@@ -64,7 +69,7 @@ onMounted(() => {
 <style scoped>
 /* ---------- Общий стиль ---------- */
 .header {
-  background-color: #f8f8f8;
+  background: linear-gradient(0deg, #fdf3d1 0%, #ffd79a 40%, #c6a4f5 100%);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
@@ -75,16 +80,29 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 20px;
+  padding: 6px 10px;
   max-width: 1600px;
   margin: 0 auto;
 }
 
+/* ---------- Логотип ---------- */
 .logo a {
+  display: flex;
+  align-items: center;
   text-decoration: none;
-  font-weight: 700;
-  font-size: 1.2rem;
-  color: #333;
+}
+
+.logo-img {
+  height: 60px;
+  width: 60px;
+  border-radius: 50%;
+  border: solid 2px #5d6adb;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+  
+}
+.logo-img:hover {
+  transform: scale(1.1);
 }
 
 /* ---------- Навигация ---------- */

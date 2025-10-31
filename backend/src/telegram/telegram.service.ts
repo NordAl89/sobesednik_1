@@ -1,6 +1,5 @@
 // backend/src/telegram/telegram.service.ts
 import { Injectable, Logger } from '@nestjs/common';
-// import axios from 'axios';
 
 @Injectable()
 export class TelegramService {
@@ -21,11 +20,23 @@ export class TelegramService {
     }
 
     try {
-      await axios.post(`${this.apiBase}/sendMessage`, {
-        chat_id: chatId,
-        text,
-        parse_mode: 'HTML',
+      const response = await fetch(`${this.apiBase}/sendMessage`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text,
+          parse_mode: 'HTML',
+        }),
       });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Ошибка Telegram API: ${errorText}`);
+      }
+
       this.logger.log(`✅ Сообщение отправлено в Telegram: ${chatId}`);
     } catch (error) {
       this.logger.error('❌ Ошибка отправки Telegram-сообщения', error);

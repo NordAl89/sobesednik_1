@@ -78,7 +78,7 @@ function getImageUrl(url) {
     : `http://localhost:4000/uploads/${url}`
 }
 
-const getDefaultAvatar = () => '/images/default-avatar.jpg' // из public
+const getDefaultAvatar = () => '/images/expert-default.svg' // из public
 </script>
 
 <style scoped>

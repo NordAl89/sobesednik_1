@@ -6,6 +6,8 @@ import { Expert } from './entities/expert.entity';
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
+import { TelegramService } from '../telegram/telegram.service';
+
 
 @Module({
   imports: [
@@ -42,6 +44,6 @@ import { extname, join } from 'path';
     }),
   ],
   controllers: [ExpertsController],
-  providers: [ExpertsService],
+  providers: [ExpertsService, TelegramService],
 })
 export class ExpertsModule {}

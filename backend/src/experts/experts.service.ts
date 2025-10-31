@@ -3,12 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Expert } from './entities/expert.entity';
 import { CreateExpertDto } from './dto/create-expert.dto';
+import { TelegramService } from '../telegram/telegram.service';
 
 @Injectable()
 export class ExpertsService {
   constructor(
     @InjectRepository(Expert)
     private expertsRepository: Repository<Expert>,
+    private readonly telegramService: TelegramService,     // <-- внедряем TelegramService
   ) {}
 
   // Создание эксперта (без файлов)
@@ -54,7 +56,12 @@ async create(createExpertDto: CreateExpertDto): Promise<Expert> {
   console.log('✅ Эксперт создан. ID:', fullExpert.id);
   return fullExpert;
 }
-
+// телеграм уведомление
+ async notifyExpertViaTelegram(expertId: string, message: string) {
+    const expert = await this.expertsRepository.findOne({ where: { id: expertId } });
+    if (!expert || !expert.telegram) return;
+    await this.telegramService.sendMessage(expert.telegram, message);
+  }
 
 // Создание эксперта с файлами
 async createWithFiles(
@@ -111,6 +118,8 @@ async createWithFiles(
 
   console.log('✅ Эксперт создан с файлами. ID:', fullExpert.id);
   return fullExpert;
+
+  
 }
 
   // Валидация эксперта для входа

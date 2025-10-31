@@ -24,7 +24,18 @@
         <p><strong>Статус:</strong> {{ expert.availability }}</p>
         <p><strong>Стоимость часа:</strong> {{ expert.price }} ₽</p>
         <p><strong>О себе:</strong> {{ expert.about }}</p>
-        <p><strong>Telegram:</strong> {{ expert.telegram }}</p>
+        <p>
+          <strong>Telegram:</strong>
+          <a 
+            v-if="expert.telegram"
+            href="#"
+            @click.prevent="handleTelegramClick"
+            class="telegram-link"
+          >
+            {{ expert.telegram }}
+          </a>
+          <span v-else>—</span>
+        </p>
         <p><strong>Разрешённые темы:</strong> {{ expert.allowedTopics }}</p>
         <p><strong>Запрещённые темы:</strong> {{ expert.forbiddenTopics }}</p>
       </div>
@@ -260,6 +271,28 @@ const addReview = async () => {
   } catch (error) {
     console.error('❌ Ошибка добавления отзыва:', error)
   }
+}
+// Логика для перехода в Telegram и отправки уведомления эксперту
+const getTelegramLink = (username) => {
+  const clean = username.replace('@', '').trim()
+  return `https://t.me/${clean}`
+}
+
+const handleTelegramClick = async () => {
+  if (!expert.value?.telegram) return
+
+  try {
+    await $fetch(`http://localhost:4000/experts/${expert.value.id}/notify`, {
+      method: 'POST',
+      body: { message: 'Пользователь перешёл в Telegram-чат эксперта с сайта "Собеседник на час"' },
+    })
+  } catch (err) {
+    console.error('❌ Ошибка при отправке уведомления эксперту:', err)
+  }
+
+  // После отправки уведомления — открываем Telegram
+  const url = getTelegramLink(expert.value.telegram)
+  window.open(url, '_blank')
 }
 
 onMounted(fetchExpert)
@@ -613,6 +646,19 @@ onMounted(fetchExpert)
     font-size: 2rem;
   }
 }
+
+.telegram-link {
+  color: #0088cc;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.telegram-link:hover {
+  color: #6f42c1;
+  text-decoration: underline;
+}
+
 
 @media (max-width: 480px) {
   .details h1 {
