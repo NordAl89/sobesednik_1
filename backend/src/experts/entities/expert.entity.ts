@@ -73,6 +73,8 @@ export class Expert {
 
   @Column({ type: 'datetime', nullable: true })
   expiresAt?: Date;
+  @Column({ default: false })
+  alwaysAvailable!: boolean;
 
   @CreateDateColumn()
   createdAt!: Date;

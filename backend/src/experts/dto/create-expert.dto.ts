@@ -60,6 +60,11 @@ export class CreateExpertDto {
   @IsOptional()
   paymentCode?: string;
 
+  @IsBoolean()
+  @IsOptional()
+  alwaysAvailable?: boolean;
+
+
   @IsString()
   @IsOptional()
   status?: string; // Оставили для статуса публикации

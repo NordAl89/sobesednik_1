@@ -156,7 +156,8 @@ export class ExpertsController {
       price: expert.price,
       mainPhotoUrl: expert.mainPhotoUrl,
       rating: expert.rating,
-      totalSessions: expert.totalSessions
+      totalSessions: expert.totalSessions,
+      alwaysAvailable: expert.alwaysAvailable
     };
   }
 
@@ -182,7 +183,8 @@ export class ExpertsController {
       price: expert.price,
       mainPhotoUrl: expert.mainPhotoUrl,
       rating: expert.rating,
-      totalSessions: expert.totalSessions
+      totalSessions: expert.totalSessions,
+      alwaysAvailable: expert.alwaysAvailable
     };
   }
 
@@ -225,7 +227,8 @@ export class ExpertsController {
       otherMessengers: expert.otherMessengers,
       adultTopics: expert.adultTopics,
       noForbiddenTopics: expert.noForbiddenTopics,
-      createdAt: expert.createdAt
+      createdAt: expert.createdAt,
+      alwaysAvailable: expert.alwaysAvailable
     };
   }
 
@@ -254,7 +257,9 @@ export class ExpertsController {
       noForbiddenTopics: expert.noForbiddenTopics,
       paymentCode: expert.paymentCode,
       createdAt: expert.createdAt,
-      updatedAt: expert.updatedAt
+      updatedAt: expert.updatedAt,
+      alwaysAvailable: expert.alwaysAvailable
+
     }));
   }
 
@@ -293,7 +298,8 @@ export class ExpertsController {
       adultTopics: expert.adultTopics,
       noForbiddenTopics: expert.noForbiddenTopics,
       paymentCode: expert.paymentCode,
-      createdAt: expert.createdAt
+      createdAt: expert.createdAt,
+      alwaysAvailable: expert.alwaysAvailable
     };
   }
 

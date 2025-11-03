@@ -16,8 +16,9 @@
 
     <!-- Информация -->
     <div class="expert-info">
+<!-- <pre>{{ expert }}</pre>  -->
       <h3>
-        {{ expert.name }}
+        {{ expert.name }} 
          <span v-if="expert.alwaysAvailable" class="always-available">24/7</span>
       </h3>
       <p>Возраст: {{ expert.age }} {{ getAgeWord(expert.age) }}</p>

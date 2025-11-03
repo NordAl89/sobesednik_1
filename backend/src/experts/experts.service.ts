@@ -44,6 +44,7 @@ async create(createExpertDto: CreateExpertDto): Promise<Expert> {
   expert.otherMessengers = createExpertDto.otherMessengers || '';
   expert.adultTopics = createExpertDto.adultTopics || false;
   expert.noForbiddenTopics = createExpertDto.noForbiddenTopics || false;
+  expert.alwaysAvailable = createExpertDto.alwaysAvailable || false;
   expert.paymentCode = createExpertDto.paymentCode;
   expert.status = this.getValidStatus(createExpertDto.status);
 
@@ -98,6 +99,7 @@ async createWithFiles(
   expert.price = createExpertDto.price;
   expert.adultTopics = createExpertDto.adultTopics || false;
   expert.noForbiddenTopics = createExpertDto.noForbiddenTopics || false;
+  expert.alwaysAvailable = createExpertDto.alwaysAvailable || false;
   expert.paymentCode = createExpertDto.paymentCode;
   expert.status = 'pending';
 

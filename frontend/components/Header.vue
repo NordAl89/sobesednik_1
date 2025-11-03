@@ -31,9 +31,7 @@
                       @click="closeMenu">
               Личный кабинет
             </NuxtLink>
-          </li>
-
-          
+          </li>          
         </ul>
       </nav>
     </div>

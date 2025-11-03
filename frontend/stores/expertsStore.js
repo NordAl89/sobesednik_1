@@ -62,7 +62,7 @@ export const useExpertsStore = defineStore('experts', {
       }
     },
 
-    // ДОБАВЬТЕ ЭТОТ МЕТОД
+   
     async addExpertWithFiles(formData) {
       this.loading = true;
       
@@ -104,7 +104,8 @@ export const useExpertsStore = defineStore('experts', {
           adultTopics: formData.get('adultTopics') === 'true',
           noForbiddenTopics: formData.get('noForbiddenTopics') === 'true',
           paymentCode: formData.get('paymentCode'),
-          status: 'pending'
+          status: 'pending',
+          alwaysAvailable: formData.get('alwaysAvailable') === 'true',
         };
 
         return await this.addExpert(expertData);

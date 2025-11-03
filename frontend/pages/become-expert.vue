@@ -238,7 +238,7 @@ const form = ref({
   price: 0,
   adultTopics: false,
   noForbiddenTopics: false,
-   alwaysAvailable: false
+  alwaysAvailable: false
 })
 
 // Данные для файлов
@@ -278,6 +278,7 @@ onMounted(async () => {
           form.value[key] = existingExpert.value[key]
         }
       })
+      
       
       // Если есть существующее фото, показываем его
       if (existingExpert.value.mainPhotoUrl) {
