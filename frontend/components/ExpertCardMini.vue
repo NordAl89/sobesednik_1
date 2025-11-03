@@ -16,7 +16,10 @@
 
     <!-- Информация -->
     <div class="expert-info">
-      <h3>{{ expert.name }}</h3>
+      <h3>
+        {{ expert.name }}
+         <span v-if="expert.alwaysAvailable" class="always-available">24/7</span>
+      </h3>
       <p>Возраст: {{ expert.age }} {{ getAgeWord(expert.age) }}</p>
       <p>Пол: {{ expert.gender === 'male' ? 'Мужской' : 'Женский' }}</p>
 
@@ -181,6 +184,17 @@ p {
   font-size: 16px;
   margin-top: 5px;
 }
+
+.always-available {
+  background-color: #27ae60;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 6px;
+}
+
 
 /* ---------- 📱 Мобильная версия ---------- */
 @media (max-width: 768px) {

@@ -24,6 +24,7 @@
       <label><input type="checkbox" v-model="filters.adultTopics" /> Есть темы 18+</label>
       <label><input type="checkbox" v-model="filters.noForbidden" /> Нет запрещённых тем</label>
       <label><input type="checkbox" v-model="filters.freeNow" /> Сейчас свободен</label>
+      <label><input type="checkbox" v-model="filters.alwaysAvailable" /> 24/7</label>
     </div>
 
     <h1>Список собеседников</h1>
@@ -77,7 +78,8 @@ const filters = ref({
   female: false,
   adultTopics: false,
   noForbidden: false,
-  freeNow: false
+  freeNow: false,
+  alwaysAvailable: false
 })
 const expertsPerPage = 5
 const currentPage = ref(1)
@@ -106,6 +108,7 @@ const filteredExperts = computed(() => {
     if (filters.value.adultTopics && (!expert.allowedTopics || !expert.allowedTopics.includes('18+'))) return false
     if (filters.value.noForbidden && expert.forbiddenTopics && expert.forbiddenTopics.length > 0) return false
     if (filters.value.freeNow && expert.status !== 'Свободен') return false
+    if (filters.value.alwaysAvailable && !expert.alwaysAvailable) return false
 
     return true
   })

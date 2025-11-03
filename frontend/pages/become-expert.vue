@@ -97,6 +97,10 @@
             <input type="checkbox" v-model="form.noForbiddenTopics" />
             <span>Запрещённых тем нет</span>
           </label>
+          <label class="checkbox">
+            <input type="checkbox" v-model="form.alwaysAvailable" />
+            <span>Готов откликаться 24/7</span>            
+          </label>
         </div>
       </div>
 
@@ -233,7 +237,8 @@ const form = ref({
   forbiddenTopics: '',
   price: 0,
   adultTopics: false,
-  noForbiddenTopics: false
+  noForbiddenTopics: false,
+   alwaysAvailable: false
 })
 
 // Данные для файлов
