@@ -184,7 +184,7 @@ async createWithFiles(
     expert.status = 'active';
     expert.publishedAt = new Date();
     const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 3); // срок жизни анкеты 3 дня
+    expiresAt.setDate(expiresAt.getDate() + 30); // срок жизни анкеты 30 дней
     expert.expiresAt = expiresAt;
     const savedExpert = await this.expertsRepository.save(expert);
     await this.saveData(); // заглушка

@@ -6,6 +6,7 @@
       <!-- Основные поля -->
       <div class="form-section">
         <h3>Основная информация</h3>
+        <p>* Поля обязательные для заполнения </p>
         
         <label>
           Логин *
@@ -61,12 +62,19 @@
 
         <label>
           Информация о себе *
-          <textarea v-model="form.about" required></textarea>
+          <textarea
+            v-model="form.about"
+            required
+            placeholder="Коротко расскажите о себе, ваших интересах и предпочтениях (до 500 символов)"
+            maxlength="500"
+          ></textarea>
+          <small>{{ form.about.length }}/500</small>
         </label>
 
         <label>
           Предпочтительные темы *
-          <input v-model="form.allowedTopics" type="text" required />
+          <input v-model="form.allowedTopics" type="text" required
+            placeholder="Укажите темы наиболее интересные для вас" />
         </label>
 
         <label>
@@ -246,7 +254,7 @@ const isFormValid = computed(() => {
     form.value.telegram,
     form.value.about,
     form.value.allowedTopics,
-    form.value.forbiddenTopics,
+    // form.value.forbiddenTopics,
     form.value.price
   ]
   return requiredFields.every(field => field !== '' && field !== null && field !== 0)

@@ -33,11 +33,7 @@
             </NuxtLink>
           </li>
 
-          <li>
-            <NuxtLink to="/admin-login" class="admin-link" @click="closeMenu">
-              Админ-панель
-            </NuxtLink>
-          </li>
+          
         </ul>
       </nav>
     </div>
