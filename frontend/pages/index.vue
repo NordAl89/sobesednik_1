@@ -16,6 +16,17 @@
         placeholder="Поиск по имени, фамилии, логину, возрасту или Telegram..."
       />
     </div>
+    <div class="sort-bar">
+      <label>Сортировка:
+        <select v-model="sortOption">
+          <option value="">Без сортировки</option>
+          <option v-for="option in sortOptions" :key="option.value" :value="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </label>
+    </div>
+
 
     <!-- Фильтры -->
     <div class="filters">
@@ -30,7 +41,7 @@
     <h1>Список собеседников</h1>
 
     <div v-if="store.loading">Загрузка...</div>
-    <div v-else-if="filteredExperts.length === 0">Нет доступных собеседников</div>
+    <div v-else-if="sortedExperts.length === 0">Нет доступных собеседников</div>
 
     <!-- Список экспертов -->
     <div v-else class="experts-list">
@@ -114,10 +125,36 @@ const filteredExperts = computed(() => {
   })
 })
 
+const sortOption = ref('') // текущая сортировка: '', 'rating', 'reviews', 'new', 'old'
+
+const sortOptions = [
+  { label: 'Высокий рейтинг', value: 'rating' },
+  { label: 'Количество отзывов', value: 'reviews' },
+  { label: 'Сначала новые', value: 'new' },
+  { label: 'Сначала старые', value: 'old' }
+]
+
+const sortedExperts = computed(() => {
+  const experts = [...filteredExperts.value] // создаём копию, чтобы не мутировать исходный массив
+
+  switch (sortOption.value) {
+    case 'rating':
+      return experts.sort((a, b) => b.rating - a.rating)
+    case 'reviews':
+      return experts.sort((a, b) => (b.reviews?.length || 0) - (a.reviews?.length || 0))
+    case 'new':
+      return experts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    case 'old':
+      return experts.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+    default:
+      return experts
+  }
+})
+
 // страничная логика
-const totalPages = computed(() => Math.ceil(filteredExperts.value.length / expertsPerPage))
-const paginatedExperts = computed(() => filteredExperts.value.slice(0, currentPage.value * expertsPerPage))
-const hasMoreExperts = computed(() => paginatedExperts.value.length < filteredExperts.value.length)
+const totalPages = computed(() => Math.ceil(sortedExperts.value.length / expertsPerPage))
+const paginatedExperts = computed(() => sortedExperts.value.slice(0, currentPage.value * expertsPerPage))
+const hasMoreExperts = computed(() => paginatedExperts.value.length < sortedExperts.value.length)
 
 function showMore() {
   if (!hasMoreExperts.value) return
@@ -283,6 +320,18 @@ body {
   background: #667eea;
   color: white;
 }
+
+.sort-bar {
+  margin: 10px 0 20px 0;
+  text-align: center;
+}
+.sort-bar select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
 
 /* ==========================================================
    📱 АДАПТИВНОСТЬ

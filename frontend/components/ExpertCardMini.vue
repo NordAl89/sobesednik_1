@@ -31,7 +31,7 @@
         </span>
       </p>
 
-      <p class="price">{{ expert.price }} руб/час</p>
+      <p class="price">Цена от {{ expert.price }} руб/час</p>
 
       <p v-if="expert.allowedTopics">Разрешённые темы: {{ expert.allowedTopics }}</p>
       <p v-if="expert.forbiddenTopics">Запрещённые темы: {{ expert.forbiddenTopics }}</p>

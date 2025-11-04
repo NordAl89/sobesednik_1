@@ -56,11 +56,7 @@
           <p><strong>Цена:</strong> {{ expert.price }} руб/час</p>
           <p><strong>Опубликована:</strong> {{ formatDate(expert.publishedAt) }}</p>
           <p><strong>Действует до:</strong> {{ formatDate(expert.expiresAt) }}</p>
-          <p><strong>Таймер:</strong> 
-            <span v-if="timeLeft > 0 && !isExpired" class="timer-value">{{ formattedTime }}</span>
-            <span v-else-if="isExpired" style="color: #ff4757;">00:00 (анкета истекла)</span>
-            <span v-else style="color: #f39c12;">не активен</span>
-          </p>
+         
         </div>
 
         <div class="info-section">
@@ -72,6 +68,8 @@
           <h3>Темы</h3>
           <p><strong>Разрешённые:</strong> {{ expert.allowedTopics || 'Все' }}</p>
           <p><strong>Запрещённые:</strong> {{ expert.forbiddenTopics || 'Нет' }}</p>
+          <p><strong>Темы 18+:</strong> {{ expert.adultTopics ? '✅ Да' : '❌ Нет' }}</p>
+          <p><strong>Запрещенных тем нет:</strong> {{ expert.noForbiddenTopics ? '✅ Да' : '❌ Нет' }}</p>
         </div>
 
         <!-- Контактная информация -->
@@ -79,8 +77,7 @@
           <h3>Контактная информация</h3>
           <p><strong>Telegram:</strong> {{ expert.telegram || 'Не указан' }}</p>
           <p v-if="expert.otherMessengers"><strong>Другие мессенджеры:</strong> {{ expert.otherMessengers }}</p>
-          <p><strong>Темы 18+:</strong> {{ expert.adultTopics ? '✅ Да' : '❌ Нет' }}</p>
-          <p><strong>Запрещенных тем нет:</strong> {{ expert.noForbiddenTopics ? '✅ Да' : '❌ Нет' }}</p>
+          
         </div>
       </div>
 
