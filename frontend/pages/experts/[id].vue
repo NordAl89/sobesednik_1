@@ -22,8 +22,8 @@
         <p><strong>Возраст:</strong> {{ expert.age }}</p>
         <p><strong>Пол:</strong> {{ expert.gender === 'male' ? 'Мужской' : 'Женский' }}</p>
         <p><strong>Статус:</strong> {{ expert.availability }}</p>
-        <p><strong>Стоимость часа:</strong> {{ expert.price }} ₽</p>
-        <p><strong>О себе:</strong> {{ expert.about }}</p>
+        <p><strong>Стоимость часа от:</strong> {{ expert.price }} ₽</p>
+        
         <p>
           <strong>Telegram:</strong>
           <a 
@@ -39,6 +39,11 @@
         <p><strong>Разрешённые темы:</strong> {{ expert.allowedTopics }}</p>
         <p><strong>Запрещённые темы:</strong> {{ expert.forbiddenTopics }}</p>
       </div>
+    </div>
+    <div class="about-section" v-if="expert.about">
+      <h3>О себе</h3>
+      <p>{{ expert.about }}</p>
+      
     </div>
 
     <!-- Галерея -->
@@ -366,6 +371,29 @@ onMounted(fetchExpert)
 .details strong {
   color: #34495e;
 }
+.about-section {
+  max-width: 800px;
+  margin: 2rem auto;
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.about-section h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  color: #2c3e50;
+}
+
+.about-section p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #555;
+  white-space: pre-line;
+}
+
 
 .gallery {
   margin: 3rem 0;

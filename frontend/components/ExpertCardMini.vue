@@ -20,6 +20,13 @@
       <h3>
         {{ expert.name }} 
          <span v-if="expert.alwaysAvailable" class="always-available">24/7</span>
+         <!-- Значок верификации -->
+          <img
+           v-if="verifiedExpert"
+            src="/images/verified_expert2.png"
+            alt="Проверенный эксперт"
+            class="verified-badge"
+          />
       </h3>
       <p>Возраст: {{ expert.age }} {{ getAgeWord(expert.age) }}</p>
       <p>Пол: {{ expert.gender === 'male' ? 'Мужской' : 'Женский' }}</p>
@@ -195,7 +202,19 @@ p {
   border-radius: 4px;
   margin-left: 6px;
 }
+.expert-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  
+}
 
+.verified-badge {
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
+  margin-left: 6px;
+}
 
 /* ---------- 📱 Мобильная версия ---------- */
 @media (max-width: 768px) {

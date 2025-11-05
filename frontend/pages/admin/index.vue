@@ -13,6 +13,16 @@
         </button>
       </div>
     </div>
+    <!-- Поиск -->
+      <div class="search-group">
+        <input
+          type="text"
+          v-model="searchQuery"
+          placeholder="Поиск по имени, логину или Telegram..."
+          class="search-input"
+        />
+      </div>
+
 
     <!-- Фильтры -->
     <div class="filters">
@@ -168,6 +178,13 @@
             >
               🗑️ Удалить
             </button>
+             <button 
+             @click="verifyExpert(expert.id)" 
+             class="action-btn verify-btn"
+             title="Подтвердить анкету"
+            >
+              🛡️ Вериф
+            </button>
 
           </div>
         </div>
@@ -186,6 +203,7 @@ const router = useRouter()
 const experts = ref([])
 const loading = ref(false)
 const statusFilter = ref('pending')
+const searchQuery = ref('')
 
 // Загрузка экспертов
 const loadExperts = async () => {
@@ -214,9 +232,23 @@ const loadExperts = async () => {
 }
 
 // Фильтрация
+// const filteredExperts = computed(() => {
+//   if (!statusFilter.value) return experts.value
+//   return experts.value.filter(expert => expert.status === statusFilter.value)
+// })
+
+// Поиск и фильтрация
 const filteredExperts = computed(() => {
-  if (!statusFilter.value) return experts.value
-  return experts.value.filter(expert => expert.status === statusFilter.value)
+  return experts.value.filter(expert => {
+    const matchesStatus = !statusFilter.value || expert.status === statusFilter.value
+    const query = searchQuery.value.toLowerCase().trim()
+    const matchesSearch =
+      !query ||
+      expert.name?.toLowerCase().includes(query) ||
+      expert.login?.toLowerCase().includes(query) ||
+      expert.telegram?.toLowerCase().includes(query)
+    return matchesStatus && matchesSearch
+  })
 })
 
 // Статистика
@@ -497,6 +529,28 @@ onMounted(() => {
   min-width: 180px;
 }
 
+.search-group {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 350px;
+  padding: 10px 15px;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.search-input:focus {
+  border-color: #3498db;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
 .refresh-btn {
   padding: 10px 20px;
   background: #3498db;
@@ -748,6 +802,13 @@ onMounted(() => {
 }
 .delete-btn:hover {
   background: #c0392b;
+}
+.verify-btn {
+  background: #389462;
+  color: white;
+}
+.verify-btn:hover {
+  background: #05a139;
 }
 
 .spinner {

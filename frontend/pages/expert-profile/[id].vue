@@ -53,7 +53,7 @@
             <span :class="statusClass">{{ getStatusText(expert.status) }}</span>
           </p>
           <p><strong>Возраст:</strong> {{ expert.age }} лет</p>
-          <p><strong>Цена:</strong> {{ expert.price }} руб/час</p>
+          <p><strong>Цена от:</strong> {{ expert.price }} руб/час</p>
           <p><strong>Опубликована:</strong> {{ formatDate(expert.publishedAt) }}</p>
           <p><strong>Действует до:</strong> {{ formatDate(expert.expiresAt) }}</p>
          
@@ -84,6 +84,9 @@
       <!-- Действия -->
       <div class="action-section" v-if="!isExpired">
         <h3>Действия</h3>
+        <p>Для верификации данных (необязательная процедура) и по другим вопросам вы можете связаться с администратором. Возможно, ответы на Ваши вопросы уже есть в нашем
+         <NuxtLink to="/faq" class="faq-link">FAQ</NuxtLink>. 
+        </p>
         <div class="action-buttons">
           <button @click="requestModeration" class="moderation-btn" v-if="expert.status === 'draft'">
             Отправить на модерацию
@@ -91,29 +94,19 @@
           <button @click="contactAdmin" class="contact-admin-btn">
             Связаться с администратором
           </button>
+          <button @click="extendPublication" class="extend-publication-btn">
+            Продлить публикацию
+          </button>
+          <button @click="toMyProfile" class="to-my-profile-btn">
+            Моя анкета
+          </button>
           <button @click="deleteProfile" class="delete-btn">
             Удалить анкету
           </button>
         </div>
       </div>
 
-      <!-- Отзывы -->
-      <div class="reviews-section">
-        <h3>Отзывы</h3>
-        <div v-if="expert.reviews && expert.reviews.length > 0" class="reviews-list">
-          <div v-for="review in expert.reviews" :key="review.id" class="review">
-            <div class="review-header">
-              <span class="review-author">{{ review.author }}</span>
-              <span class="review-rating">⭐ {{ review.rating }}/5</span>
-            </div>
-            <p class="review-text">{{ review.text }}</p>
-            <span class="review-date">{{ review.date }}</span>
-          </div>
-        </div>
-        <div v-else class="no-reviews">
-          Пока нет отзывов
-        </div>
-      </div>
+      
 
       <button @click="logout" class="logout-btn">
         Выйти
@@ -239,7 +232,13 @@ const requestModeration = async () => {
 };
 
 const contactAdmin = () => {
-  window.open('https://t.me/your_admin_username', '_blank');
+  window.open('https://t.me/alaskaRiver39', '_blank');
+};
+const extendPublication = () => {
+  alert('Здесь нужно сделать переадресацию на продление публикации');
+};
+const toMyProfile = () => {
+  router.push(`/experts/${expertsStore.currentExpert.id}?edit=${expert.value.id}`);
 };
 
 const logout = () => {
@@ -498,6 +497,18 @@ const formatDate = (dateString) => {
   background: #f3f9ff;
 }
 
+.faq-link {
+  color: #1976d2;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.faq-link:hover {
+  color: #0d47a1;
+  text-decoration: none;
+}
+
+
 .action-section h3 {
   margin-top: 0;
   color: #1976d2;
@@ -521,6 +532,24 @@ const formatDate = (dateString) => {
 .contact-admin-btn {
   padding: 10px 20px;
   background: #17a2b8;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.extend-publication-btn
+{
+  padding: 10px 20px;
+  background: #1e9970;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.to-my-profile-btn
+{
+  padding: 10px 20px;
+  background: #007bff;
   color: white;
   border: none;
   border-radius: 5px;

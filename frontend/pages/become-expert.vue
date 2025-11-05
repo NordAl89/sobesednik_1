@@ -65,7 +65,7 @@
           <textarea
             v-model="form.about"
             required
-            placeholder="Коротко расскажите о себе, ваших интересах и предпочтениях (до 500 символов)"
+            placeholder="Коротко о себе, ваших интересах и предпочтениях. В конце можете указать стоимость видео, аудио, письменного общения (до 500 символов)"
             maxlength="500"
           ></textarea>
           <small>{{ form.about.length }}/500</small>
@@ -83,7 +83,7 @@
         </label>
 
         <label>
-          Стоимость часа общения *
+          Стоимость часа общения от*
           <input v-model.number="form.price" type="number" min="0" required />
         </label>
 
@@ -238,7 +238,7 @@ const form = ref({
   price: 0,
   adultTopics: false,
   noForbiddenTopics: false,
-  alwaysAvailable: false
+  alwaysAvailable: false,
 })
 
 // Данные для файлов

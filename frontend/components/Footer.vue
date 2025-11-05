@@ -3,7 +3,7 @@
     <div class="footer-container">
       <!-- 🟡 Раздел Help -->
       <div class="footer-section">
-        <h3>Help</h3>
+        <h3>Поддержка</h3>
         <ul>
           <li><NuxtLink to="/faq">FAQ</NuxtLink></li>
           <li>
@@ -16,7 +16,7 @@
 
       <!-- 🟣 Раздел Company -->
       <div class="footer-section">
-        <h3>Company</h3>
+        <h3>Компания</h3>
         <ul>
           <li>
             <NuxtLink to="/admin-login">Админ-панель</NuxtLink>
@@ -26,7 +26,7 @@
 
       <!-- 🔵 Раздел Contacts -->
       <div class="footer-section">
-        <h3>Contacts</h3>
+        <h3>Контакты</h3>
         <ul>
           <li>
             <a href="mailto:support@sobesednik.com">support@sobesednik.com</a>
