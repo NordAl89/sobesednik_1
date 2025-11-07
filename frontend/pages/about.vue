@@ -1,14 +1,84 @@
 <template>
-  <div>
-    <h1>О нас</h1>
-    <p>Информация о проекте, команде и тематические статьи появятся здесь.</p>
+  <div class="about-page">
+    <section class="intro">
+      <h1>О проекте</h1>
+      <p>
+        «Твой друг на этот час» — это пространство доверительного общения.
+        Здесь вы можете поговорить с человеком, который вас выслушает,
+        поддержит и поможет посмотреть на ситуацию со стороны.
+      </p>
+    </section>
+
+    <section class="mission">
+      <h2>Наша миссия</h2>
+      <p>
+        Мы верим, что каждому важно быть услышанным. 
+        Проект создан для людей, которым не хватает живого общения, 
+        поддержки или просто тёплого разговора без осуждения.
+      </p>
+    </section>
+
+    <section class="how-it-works">
+      <h2>Как это работает</h2>
+      <ul>
+        <li>Вы выбираете собеседника, которому доверяете.</li>
+        <li>Вы общаетесь в чате, по голосу или видео.</li>
+        <li>Все разговоры конфиденциальны и не записываются.</li>
+      </ul>
+    </section>
+
+    <section class="team">
+      <h2>Наша команда</h2>
+      <p>
+        Над проектом работает небольшая команда специалистов в области общения, психологии и технологий.
+        Мы создаём место, где можно быть собой.
+      </p>
+    </section>
+
+    <section class="values">
+      <h2>Наши ценности</h2>
+      <ul>
+        <li>🤝 Уважение и эмпатия</li>
+        <li>🔒 Конфиденциальность</li>
+        <li>💬 Живое общение без фильтров</li>
+      </ul>
+    </section>
+
+    <section class="call-to-action">
+      <h2>Присоединяйтесь</h2>
+      <p>
+        Хотите стать собеседником или просто найти человека, который вас поймёт?
+        Мы всегда открыты новым людям.
+      </p>
+      <router-link to="/become-expert" class="btn">Стать собеседником</router-link>
+    </section>
   </div>
 </template>
 
-<script setup>
-// Пока пусто
-</script>
-
 <style scoped>
-/* Стили по желанию */
+.about-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  line-height: 1.6;
+}
+h1, h2 {
+  color: #333;
+}
+ul {
+  list-style: disc;
+  margin-left: 1.5rem;
+}
+.btn {
+  display: inline-block;
+  background-color: #4caf50;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: 0.2s;
+}
+.btn:hover {
+  background-color: #45a049;
+}
 </style>

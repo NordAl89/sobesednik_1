@@ -187,8 +187,26 @@
         <h3>Оплата публикации анкеты</h3>
         
         <div class="payment-info">
-          <p><strong>Сумма к оплате:</strong> 1000 рублей</p>
-          <p><strong>Срок публикации:</strong> 30 дней</p>
+          <h4>Выберите срок публикации</h4>
+  
+          <!-- Ползунок выбора срока -->
+          <div class="slider-section">
+            <button @click="selectedDays = Math.max(30, selectedDays - 30)">◀</button>
+            <input 
+              type="range"
+              min="30"
+              max="360"
+              step="30"
+              v-model="selectedDays"
+            />
+            <button @click="selectedDays = Math.min(360, selectedDays + 30)">▶</button>
+          </div>
+        
+          <p><strong>Срок публикации:</strong> {{ selectedDays }} дней</p>
+          <p><strong>Сумма к оплате:</strong> {{ paymentAmount }} рублей</p>
+          <p v-if="discountPercent > 0" class="discount-text">
+            💰 Вы экономите {{ discountPercent }}%
+          </p>
           <p><strong>Реквизиты:</strong> 2200 0000 0000 0000 (Тинькофф)</p>
           <p><strong>Код оплаты:</strong> <span class="payment-code">{{ paymentCode }}</span></p>
           <p class="important">Обязательно укажите этот код в комментарии к платежу!</p>
@@ -412,8 +430,12 @@ const confirmPayment = async () => {
     Object.keys(form.value).forEach(key => {
       if (form.value[key] !== null && form.value[key] !== undefined) {
         formData.append(key, form.value[key])
+        
       }
     })
+    formData.append('publicationDays', selectedDays.value)
+    formData.append('paymentAmount', paymentAmount.value)
+
     
     // Добавляем файлы
     if (mainPhotoFile.value) {
@@ -451,6 +473,45 @@ const requestModeration = async () => {
     alert('Ошибка при отправке запроса: ' + err.message)
   }
 }
+
+// счетчик для выбора срока публикации
+const selectedDays = ref(30)
+
+const paymentAmount = computed(() => {
+  const base = 1000
+  const multiplier = selectedDays.value / 30
+  let discount = 0
+
+  // Условия скидки по процентам
+  if (selectedDays.value >= 60 && selectedDays.value < 90) discount = 0.02
+  else if (selectedDays.value >= 90 && selectedDays.value < 120) discount = 0.03
+  else if (selectedDays.value >= 120 && selectedDays.value < 150) discount = 0.04
+  else if (selectedDays.value >= 150 && selectedDays.value < 180) discount = 0.05
+  else if (selectedDays.value >= 180 && selectedDays.value < 210) discount = 0.06
+  else if (selectedDays.value >= 210 && selectedDays.value < 240) discount = 0.07
+  else if (selectedDays.value >= 240 && selectedDays.value < 270) discount = 0.08
+  else if (selectedDays.value >= 270 && selectedDays.value < 300) discount = 0.09
+  else if (selectedDays.value >= 300) discount = 0.10
+
+  const rawAmount = base * multiplier
+  const finalAmount = rawAmount - rawAmount * discount
+  return Math.round(finalAmount)
+})
+// Вычисление процента скидки
+const discountPercent = computed(() => {
+  if (selectedDays.value >= 60 && selectedDays.value < 90) return 2
+  else if (selectedDays.value >= 90 && selectedDays.value < 120) return 3
+  else if (selectedDays.value >= 120 && selectedDays.value < 150) return 4
+  else if (selectedDays.value >= 150 && selectedDays.value < 180) return 5
+  else if (selectedDays.value >= 180 && selectedDays.value < 210) return 6
+  else if (selectedDays.value >= 210 && selectedDays.value < 240) return 7
+  else if (selectedDays.value >= 240 && selectedDays.value < 270) return 8
+  else if (selectedDays.value >= 270 && selectedDays.value < 300) return 9
+  else if (selectedDays.value >= 300) return 10
+  else return 0
+})
+
+
 </script>
 
 <style scoped>
@@ -679,4 +740,41 @@ input[type="file"] {
   border-radius: 6px;
   background: white;
 }
+
+.slider-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 15px 0;
+}
+
+.slider-section input[type="range"] {
+  width: 200px;
+}
+
+.slider-section button {
+  background: #2b7bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  transition: 0.2s;
+}
+
+.slider-section button:hover {
+  background: #1a5ee8;
+}
+.discount-text {
+  font-size: 16px;
+  color: #27ae60;
+  font-weight: bold;
+  margin-top: 8px;
+}
+
+
 </style>

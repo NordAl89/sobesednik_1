@@ -38,14 +38,11 @@
         </span>
       </p>
 
-      <p class="price">Цена от {{ expert.price }} руб/час</p>
+      <p class="price"><span class="price_simple">Цена от:</span> {{ expert.price }} руб/час</p>
 
       <p v-if="expert.allowedTopics">Разрешённые темы: {{ expert.allowedTopics }}</p>
       <p v-if="expert.forbiddenTopics">Запрещённые темы: {{ expert.forbiddenTopics }}</p>
-
-      <div v-if="(expert.status || expert.availability) === 'Занят'" class="busy-label">
-        🚫 Сейчас занят
-      </div>
+      
     </div>
   </div>
 </template>
@@ -192,7 +189,11 @@ p {
   font-size: 16px;
   margin-top: 5px;
 }
-
+.price span {
+  font-weight: normal;
+  color: #555;
+  font-size: 14px;
+}
 .always-available {
   background-color: #27ae60;
   color: white;
