@@ -44,12 +44,12 @@
           <h3>Основная информация</h3>
           <!-- Таймер обратного отсчета -->
             <div v-if="!isExpired && timeLeft > 0" class="countdown-timer">
-             ⏰ Осталось времени до удаления анкеты: {{ formattedTime }}
+             ⏰ Срок публикации анкеты: {{ formattedTime }}
             </div>
             <div v-else-if="isExpired" class="expired-banner">
               ⚠️ Срок публикации вашей анкеты истек. Анкета будет удалена.
             </div>
-          <p><strong>Статус:</strong> 
+          <p><strong>Статус анкеты: </strong> 
             <span :class="statusClass">{{ getStatusText(expert.status) }}</span>
           </p>
           <p><strong>Возраст:</strong> {{ expert.age }} лет</p>
@@ -92,13 +92,16 @@
             Отправить на модерацию
           </button>
           <button @click="contactAdmin" class="contact-admin-btn">
-            Связаться с администратором
+            Связаться с админом
           </button>
           <button @click="extendPublication" class="extend-publication-btn">
             Продлить публикацию
           </button>
           <button @click="toMyProfile" class="to-my-profile-btn">
             Моя анкета
+          </button>
+          <button @click="profileStausSwitcher" class="profileStausSwitcher-btn">
+            Свободен
           </button>
           <button @click="deleteProfile" class="delete-btn">
             Удалить анкету
@@ -235,10 +238,14 @@ const contactAdmin = () => {
   window.open('https://t.me/alaskaRiver39', '_blank');
 };
 const extendPublication = () => {
-  alert('Здесь нужно сделать переадресацию на продление публикации');
+  alert('Здесь нужно сделать переадресацию на popUp с оплатой');
 };
 const toMyProfile = () => {
   router.push(`/experts/${expertsStore.currentExpert.id}?edit=${expert.value.id}`);
+};
+
+const profileStausSwitcher = () => {
+  alert('Здесь нужно сделать переключатель Свободен/Занят для мини карты и детальной карты эксперта');
 };
 
 const logout = () => {
@@ -312,7 +319,7 @@ const formatDate = (dateString) => {
   border-radius: 10px;
   margin-bottom: 20px;
   box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-  animation: pulse 2s infinite;
+  /*animation: pulse 2s infinite;*/
 }
 
 @keyframes pulse {
@@ -550,6 +557,15 @@ const formatDate = (dateString) => {
 {
   padding: 10px 20px;
   background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.profileStausSwitcher-btn
+{
+  padding: 10px 20px;
+  background: #ffc107;
   color: white;
   border: none;
   border-radius: 5px;

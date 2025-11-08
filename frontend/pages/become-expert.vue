@@ -51,15 +51,7 @@
       <!-- Темы и настройки -->
       <div class="form-section">
         <h3>Темы и настройки</h3>
-
-        <label>
-          Занятость
-          <select v-model="form.availability">
-            <option value="Свободен">Свободен</option>
-            <option value="Занят">Занят</option>
-          </select>
-        </label>
-
+       
         <label>
           Информация о себе *
           <textarea
@@ -185,6 +177,10 @@
     <div v-if="showPaymentModal" class="modal-overlay">
       <div class="payment-modal">
         <h3>Оплата публикации анкеты</h3>
+        <p>
+          Возникли сложности с оплатой? Воспользуйтесь 
+          <a href="/faq" target="_blank" rel="noopener noreferrer" class="faq-link">FAQ</a>.
+        </p>
         
         <div class="payment-info">
           <h4>Выберите срок публикации</h4>
