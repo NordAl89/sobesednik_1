@@ -139,6 +139,13 @@
             >
               ✅ Одобрить
             </button>
+            <button               
+              @click="extendPublicationt(expert.id)"
+              class="action-btn extend-publicationt-btn"
+              title="Продлить публикацию"
+            >
+              Продлить
+            </button>
             <button 
               v-if="expert.status === 'pending'" 
               @click="rejectExpert(expert.id)"
@@ -278,6 +285,14 @@ const approveExpert = async (expertId) => {
   } catch (error) {
     console.error('❌ Ошибка одобрения:', error)
     alert('Ошибка при одобрении анкеты: ' + error.data?.message || error.message)
+  }
+}
+
+const extendPublicationt = async (expertId) => {
+  try {
+    alert('Здесь нужно реализовать логику продления публикации', expertId)
+  } catch (error) {
+    console.error('❌ Ошибка продления публикации:', error)
   }
 }
 
@@ -756,6 +771,13 @@ onMounted(() => {
   background: #219a52;
 }
 
+.extend-publicationt-btn {
+  background: #2366a5;
+  color: white;
+}
+.extend-publicationt-btn:hover {
+  background: #5f8ac2;
+}
 .reject-btn {
   background: #e74c3c;
   color: white;

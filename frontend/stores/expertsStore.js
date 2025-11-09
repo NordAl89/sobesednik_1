@@ -106,6 +106,7 @@ export const useExpertsStore = defineStore('experts', {
           paymentCode: formData.get('paymentCode'),
           status: 'pending',
           alwaysAvailable: formData.get('alwaysAvailable') === 'true',
+          verifiedExpert: formData.get('verifiedExpert') === 'true',
         };
 
         return await this.addExpert(expertData);
