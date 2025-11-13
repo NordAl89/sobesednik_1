@@ -14,7 +14,9 @@
     </section>
 
     <div class="faq-support">
-      <p>Не нашли ответ? Напишите нам в <a href="https://t.me/sobesednik_support" target="_blank">Telegram</a> или на почту <a href="mailto:support@sobesednik.site">support@sobesednik.site</a>.</p>
+      <p>Не нашли ответ? Напишите нам в <a href="https://t.me/Sobesednik_support"     target="_blank">Telegram</a>
+         <!-- или на почту <a href="mailto:support@sobesednik.site">support@sobesednik.site</a>. -->
+      </p>
     </div>
   </div>
 </template>

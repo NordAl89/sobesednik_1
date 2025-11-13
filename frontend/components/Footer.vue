@@ -7,7 +7,7 @@
         <ul>
           <li><NuxtLink to="/faq">FAQ</NuxtLink></li>
           <li>
-            <a href="https://t.me/sobesednik_support" target="_blank" rel="noopener">
+            <a href="https://t.me/Sobesednik_support" target="_blank" rel="noopener">
               Поддержка в Telegram
             </a>
           </li>
@@ -28,22 +28,22 @@
       <div class="footer-section">
         <h3>Контакты</h3>
         <ul>
-          <li>
+          <!-- <li>
             <a href="mailto:support@sobesednik.com">support@sobesednik.com</a>
-          </li>
+          </li> -->
           <li>
-            <a href="https://t.me/sobesednik_chat" target="_blank" rel="noopener">
+            <a href="https://t.me/Konstantin_Nor" target="_blank" rel="noopener">
               Telegram чат
             </a>
           </li>
-          <li>
+          <!-- <li>
             <a href="https://vk.com/sobesednik" target="_blank" rel="noopener">VK</a>
           </li>
           <li>
             <a href="https://www.instagram.com/sobesednik" target="_blank" rel="noopener">
               Instagram
             </a>
-          </li>
+          </li> -->
         </ul>
       </div>
     </div>

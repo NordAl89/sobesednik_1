@@ -235,7 +235,7 @@ const requestModeration = async () => {
 };
 
 const contactAdmin = () => {
-  window.open('https://t.me/alaskaRiver39', '_blank');
+  window.open('https://t.me/Sobesednik_support', '_blank');
 };
 const extendPublication = () => {
   alert('Здесь нужно сделать переадресацию на popUp с оплатой');

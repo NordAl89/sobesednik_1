@@ -107,7 +107,7 @@
             type="file" 
             @change="handleMainPhotoChange"
             accept="image/*"
-            :required="!isEditMode"
+            required
           />
           <small>Рекомендуемый размер: 500x500px, формат JPG/PNG</small>
           <div v-if="mainPhotoPreview" class="image-preview">
@@ -205,7 +205,8 @@
           </p>
           <p><strong>Реквизиты:</strong> 2200 0000 0000 0000 (Тинькофф)</p>
           <p><strong>Код оплаты:</strong> <span class="payment-code">{{ paymentCode }}</span></p>
-          <p class="important">Обязательно укажите этот код в комментарии к платежу!</p>
+          <!-- <p class="important">Обязательно укажите этот код в комментарии к платежу!</p> -->
+           <p class="important">Публикация анкет, первые 30 дней, бесплатна. Просто нажмите "Оплата произведена" и ваша анкета будет опубликована.</p>
         </div>
 
         <div class="payment-actions">
@@ -771,6 +772,4 @@ input[type="file"] {
   font-weight: bold;
   margin-top: 8px;
 }
-
-
 </style>
