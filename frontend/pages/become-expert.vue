@@ -107,11 +107,21 @@
             type="file" 
             @change="handleMainPhotoChange"
             accept="image/*"
-            required
+            :class="{ 'error-border': showPhotoError }"
           />
           <small>Рекомендуемый размер: 500x500px, формат JPG/PNG</small>
           <div v-if="mainPhotoPreview" class="image-preview">
             <img :src="mainPhotoPreview" alt="Предпросмотр главного фото" />
+            <button 
+              type="button" 
+              @click="removeMainPhoto"
+              class="remove-file-btn"
+            >
+              ×
+            </button>
+          </div>
+          <div v-if="showPhotoError" class="error-message">
+            Пожалуйста, загрузите главное фото
           </div>
         </label>
 
@@ -224,6 +234,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from '#app'
 import { useExpertsStore } from '~/stores/expertsStore'
+const showPhotoError = ref(false)  // ref для отслеживания ошибки фото
 
 const route = useRoute()
 const router = useRouter()
@@ -274,10 +285,17 @@ const isFormValid = computed(() => {
     form.value.telegram,
     form.value.about,
     form.value.allowedTopics,
-    // form.value.forbiddenTopics,
     form.value.price
   ]
-  return requiredFields.every(field => field !== '' && field !== null && field !== 0)
+  
+  const fieldsValid = requiredFields.every(field => field !== '' && field !== null && field !== 0)
+  
+  // Проверка фото: для нового пользователя обязательно, для редактирования - либо есть файл, либо есть существующее фото
+  const photoValid = isEditMode.value 
+    ? (mainPhotoFile.value || existingExpert.value?.mainPhotoUrl)
+    : mainPhotoFile.value
+
+  return fieldsValid && photoValid
 })
 
 // Загрузка данных для редактирования
@@ -294,10 +312,10 @@ onMounted(async () => {
         }
       })
       
-      
-      // Если есть существующее фото, показываем его
+      // Если есть существующее фото, показываем его и сбрасываем ошибку
       if (existingExpert.value.mainPhotoUrl) {
         mainPhotoPreview.value = `http://localhost:4000${existingExpert.value.mainPhotoUrl}`
+        showPhotoError.value = false  // Сбрасываем ошибку если фото есть
       }
     } catch (error) {
       console.error('Ошибка загрузки данных эксперта:', error)
@@ -320,10 +338,12 @@ const handleMainPhotoChange = (event) => {
   if (file.size > 10 * 1024 * 1024) {
     alert('Файл слишком большой. Максимальный размер: 10MB')
     event.target.value = ''
+    showPhotoError.value = true
     return
   }
 
   mainPhotoFile.value = file
+  showPhotoError.value = false
   
   // Создание preview
   const reader = new FileReader()
@@ -332,6 +352,13 @@ const handleMainPhotoChange = (event) => {
   }
   reader.readAsDataURL(file)
 }
+// Метод для удаления главного фото
+  const removeMainPhoto = () => {
+    mainPhotoFile.value = null
+    mainPhotoPreview.value = ''
+    showPhotoError.value = true
+  }
+
 
 // Обработчик галереи
 const handleGalleryChange = (event) => {
@@ -389,8 +416,14 @@ const handleSubmit = async () => {
     return
   }
 
-  // Проверка главного фото только для новой регистрации
+  // Явная проверка главного фото
   if (!mainPhotoFile.value && !isEditMode.value) {
+    alert('Пожалуйста, загрузите главное фото')
+    return
+  }
+
+  // Дополнительная проверка: если в режиме редактирования и нет ни существующего фото, ни нового
+  if (isEditMode.value && !mainPhotoFile.value && !existingExpert.value?.mainPhotoUrl) {
     alert('Пожалуйста, загрузите главное фото')
     return
   }
@@ -771,5 +804,45 @@ input[type="file"] {
   color: #27ae60;
   font-weight: bold;
   margin-top: 8px;
+}
+
+.error-border {
+  border-color: #e74c3c !important;
+  border-width: 2px !important;
+}
+
+.error-message {
+  color: #e74c3c;
+  font-size: 14px;
+  margin-top: 5px;
+  font-weight: normal;
+}
+
+.remove-file-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: rgba(255, 0, 0, 0.7);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.image-preview {
+  position: relative;
+  display: inline-block;
+  margin-top: 10px;
+}
+
+.image-preview img {
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
 }
 </style>
