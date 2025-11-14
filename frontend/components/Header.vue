@@ -6,7 +6,7 @@
           <NuxtImg
           src="/images/sobesednik_logo.png" alt="Собеседник" class="logo-img"
           />
-          <!-- <img src="/images/sobesed_logo.png" alt="Собеседник" class="logo-img" /> -->
+          
         </NuxtLink>
       </div>
 

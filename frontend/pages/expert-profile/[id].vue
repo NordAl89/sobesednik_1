@@ -27,14 +27,8 @@
           </div>
         </div>
         <div class="header-actions">
-          <button @click="editProfile" class="edit-btn" :disabled="isExpired">
-            Редактировать профиль
-          </button>
-          <!-- <div class="expiration-info">
-            <span v-if="!isExpired && timeLeft > 0">Осталось: {{ formattedTime }}</span>
-            <span v-else-if="isExpired" style="color: #ff4757;">Анкета истекла</span>
-            <span v-else style="color: #f39c12;">Срок не установлен</span>
-          </div> -->
+         
+         
         </div>
       </div>
 
@@ -102,6 +96,9 @@
           </button>
           <button @click="profileStausSwitcher" class="profileStausSwitcher-btn">
             Свободен
+          </button>
+           <button @click="editProfile" class="edit-btn" :disabled="isExpired">
+            Редактировать профиль
           </button>
           <button @click="deleteProfile" class="delete-btn">
             Удалить анкету

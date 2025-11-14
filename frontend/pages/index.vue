@@ -10,11 +10,8 @@
 
     <!-- Поиск -->
     <div class="search-bar">
-      <input
-        type="text"
-        v-model="searchQuery"
-        placeholder="Поиск по имени, фамилии, логину, возрасту или Telegram..."
-      />
+      <input type="text" v-model="searchQuery"
+        placeholder="Поиск по имени, фамилии, логину, возрасту или Telegram..." />
     </div>
     <div class="sort-bar">
       <label>Сортировка:
@@ -36,7 +33,7 @@
       <label><input type="checkbox" v-model="filters.noForbidden" /> Нет запрещённых тем</label>
       <label><input type="checkbox" v-model="filters.freeNow" /> Сейчас свободен</label>
       <label><input type="checkbox" v-model="filters.alwaysAvailable" /> 24/7</label>
-       <label><input type="checkbox" v-model="filters.verifiedExpert" /> Подтвержденный собеседник</label>
+      <label><input type="checkbox" v-model="filters.verifiedExpert" /> Подтвержденный собеседник</label>
     </div>
 
     <h1>Список собеседников</h1>
@@ -46,12 +43,8 @@
 
     <!-- Список экспертов -->
     <div v-else class="experts-list">
-      <ExpertCardMini
-        v-for="expert in paginatedExperts"
-        :key="expert.id"
-        :expert="expert"
-        @click="goToExpert(expert.id)"
-      />
+      <ExpertCardMini v-for="expert in paginatedExperts" :key="expert.id" :expert="expert"
+        @click="goToExpert(expert.id)" />
     </div>
 
     <!-- Кнопка "Показать ещё" -->
@@ -63,16 +56,73 @@
 
     <!-- Нумерация страниц -->
     <div v-if="totalPages > 1" class="pagination">
-      <button
-        v-for="page in totalPages"
-        :key="page"
-        @click="goToPage(page)"
-        :class="{ active: page === currentPage }"
-      >
+      <button v-for="page in totalPages" :key="page" @click="goToPage(page)" :class="{ active: page === currentPage }">
         {{ page }}
       </button>
     </div>
+
+    <!-- SEO Блок -->
+    <div class="seo-block">
+      <h2>Онлайн-собеседники для доверительного общения</h2>
+
+      <p>
+        «Собеседник на час» — это русскоязычная онлайн-платформа доверительного общения, где каждый может найти
+        собеседника для приватной беседы в формате чата, аудио или видео.
+        Здесь вы можете получить эмоциональную поддержку, обсудить важные темы и просто поговорить без осуждения и
+        давления.
+      </p>
+
+      
+      
+      <button @click="showSeo = !showSeo" class="seo-toggle">
+        {{ showSeo ? 'Свернуть' : 'Подробнее' }}
+      </button>
+
+      <div v-if="showSeo" class="seo-text">
+        <p>
+          Подробная информация о платформе: каталог экспертов, фильтры по полу, возрасту, темам, рейтингу и цене.
+          Эксперты проходят верификацию, чтобы гарантировать качественное доверительное общение.
+          Выбирайте собеседника, связывайтесь через чат, аудио или видео, оплачивайте напрямую или через платформу.
+          Ключевые слова: онлайн-собеседник, доверительное общение, чат с экспертом, видеоразговор, аудиосвязь,
+          эмоциональная поддержка.
+        </p>
+        <h3>Преимущества нашей платформы</h3>
+      <ul>
+        <li>Выбор экспертов по интересам, возрасту, формату связи и стоимости.</li>
+        <li>Безопасное и анонимное общение с подтверждёнными экспертами.</li>
+        <li>Эксперты с высокой эмпатией и опытом доверительного общения.</li>
+        <li>Удобные фильтры по доступности, рейтингу, наличию тем 18+ и статусу «Свободен сейчас».</li>
+        <li>Возможность мгновенной связи или планирования беседы на удобное время.</li>
+      </ul>
+        <h3>Как работает «Собеседник на час»</h3>
+      <ol>
+        <li>Выбираете собеседника в каталоге по фильтрам: пол, возраст, темы, рейтинг, цена.</li>
+        <li>Открываете профиль эксперта: фото, видео-презентацию, темы общения, тарифы.</li>
+        <li>Связываетесь через чат, аудио или видео — мгновенно или по расписанию.</li>
+        <li>Оплачиваете услугу через платформу или напрямую эксперту.</li>
+      </ol>
+
+      <h3>Кому будет полезно</h3>
+      <p>
+        Платформа подходит взрослым пользователям 18–65 лет, которые ищут эмоциональную поддержку, хотят поделиться
+        переживаниями, снять стресс или просто поговорить с понимающим человеком.
+        Особенно полезно людям из эмоционально нагруженных профессий — медицине, образовании, IT — а также тем, кто
+        чувствует одиночество или усталость.
+      </p>
+
+      <h3>Почему выбирают нас</h3>
+      <p>
+        Мы создаём безопасное и комфортное пространство для доверительного общения, где каждый может быть услышан.
+        Сервис работает по всему миру и ориентирован на русскоязычную аудиторию.
+        Онлайн-собеседники доступны в формате чата, аудио и видео, с гибкими фильтрами по доступности, рейтингу и
+        тематике беседы.
+      </p>
+
+      </div>
+    </div>
+   
   </div>
+
 </template>
 
 <script setup>
@@ -189,15 +239,51 @@ watch([searchQuery, filters], () => {
   currentPage.value = 1
 })
 const goToExpert = (id) => router.push(`/experts/${id}`)
+
+//SEO блок
+//Микроразметка Schema.org для платформы
+onMounted(() => {
+  const script = document.createElement('script')
+  script.type = 'application/ld+json'
+  script.text = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": "Собеседник на час",
+    "description": "Онлайн-платформа доверительного общения: чат, аудио и видео с русскоязычными экспертами для эмоциональной поддержки.",
+    "provider": {
+      "@type": "Organization",
+      "name": "Собеседник на час",
+      "url": "https://example.com",
+      "sameAs": [
+        "https://t.me/example",
+        "https://vk.com/example"
+      ]
+    },
+    "audience": {
+      "@type": "Audience",
+      "audienceType": "Русскоязычные взрослые пользователи 18–65 лет, ищущие эмоциональную поддержку"
+    },
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "RUB",
+      "url": "https://example.com/experts",
+      "availability": "https://schema.org/InStock"
+    }
+  })
+  document.head.appendChild(script)
+})
+const showSeo = ref(false)
+
 </script>
 
 <style scoped>
 .page-container {
-  height: 100vh;
+  min-height: 100vh; /* вместо height: 100vh */
   overflow-y: auto;
   padding: 0 16px 40px;
   max-width: 1600px;
   margin: 0 auto;
+  box-sizing: border-box; /* учитывает padding */
 }
 
 /* ---------- Фон и шрифт ---------- */
@@ -232,6 +318,7 @@ body {
   margin: 20px 0;
   text-align: center;
 }
+
 .search-bar input {
   width: 100%;
   max-width: 400px;
@@ -241,6 +328,7 @@ body {
   font-size: 0.95rem;
   transition: 0.2s;
 }
+
 .search-bar input:focus {
   border-color: #667eea;
   outline: none;
@@ -254,6 +342,7 @@ body {
   justify-content: center;
   margin-bottom: 20px;
 }
+
 .filters label {
   display: flex;
   align-items: center;
@@ -265,6 +354,7 @@ body {
   cursor: pointer;
   transition: background 0.2s;
 }
+
 .filters label:hover {
   background: #eee;
 }
@@ -282,6 +372,7 @@ body {
   text-align: center;
   margin-top: 20px;
 }
+
 .show-more button {
   padding: 10px 18px;
   background-color: #667eea;
@@ -292,9 +383,11 @@ body {
   font-size: 0.95rem;
   transition: background 0.3s;
 }
+
 .show-more button:hover {
   background-color: #556cd6;
 }
+
 .show-more button:disabled {
   opacity: 0.7;
   cursor: default;
@@ -308,6 +401,7 @@ body {
   margin: 20px 0;
   flex-wrap: wrap;
 }
+
 .pagination button {
   background: #f0f0f0;
   border: none;
@@ -316,9 +410,11 @@ body {
   cursor: pointer;
   transition: 0.3s;
 }
+
 .pagination button:hover {
   background: #dcdcdc;
 }
+
 .pagination button.active {
   background: #667eea;
   color: white;
@@ -328,6 +424,7 @@ body {
   margin: 10px 0 20px 0;
   text-align: center;
 }
+
 .sort-bar select {
   padding: 6px 10px;
   border-radius: 6px;
@@ -345,14 +442,17 @@ body {
   .compact-hero {
     padding: 14px;
   }
+
   .compact-hero-text {
     font-size: 0.9rem;
   }
+
   .filters {
     gap: 8px;
     flex-direction: column;
     align-items: flex-start;
   }
+
   .filters label {
     font-size: 13px;
     width: 100%;
@@ -362,7 +462,8 @@ body {
 /* === 480px — обычные смартфоны === */
 @media (max-width: 480px) {
   .experts-list {
-    grid-template-columns: 1fr; /* 1 колонка */
+    grid-template-columns: 1fr;
+    /* 1 колонка */
   }
 
   .filters {
@@ -388,9 +489,11 @@ body {
     color: white;
     font-size: 24px;
   }
+
   .nav {
     display: none;
   }
+
   .nav.open {
     display: flex;
     flex-direction: column;
@@ -403,11 +506,92 @@ body {
   }
 }
 
+/* ---------- SEO Блок ---------- */
+.seo-block {
+  background: linear-gradient(
+    0deg,
+    #fef7e3 0%,  
+    #f7eddf 40%, 
+    #e2d8f3 100%  
+  );
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  margin: 40px 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #333;
+}
+
+.seo-block h2 {
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
+  color: #1a202c;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.seo-block h3 {
+  font-size: clamp(1.1rem, 1.5vw, 1.3rem);
+  color: #2d3748;
+  margin-top: 20px;
+  margin-bottom: 12px;
+}
+
+.seo-block p {
+  margin-bottom: 12px;
+}
+
+.seo-block ul,
+.seo-block ol {
+  padding-left: 20px;
+  margin-bottom: 12px;
+}
+
+.seo-block li {
+  margin-bottom: 6px;
+}
+
+.seo-toggle {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 8px 16px;
+  background-color: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.3s;
+}
+
+.seo-toggle:hover {
+  background-color: #556cd6;
+}
+
+.seo-text {
+  margin-top: 16px;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 480px) {
+  .seo-block {
+    padding: 16px;
+    font-size: 0.9rem;
+  }
+
+  .seo-toggle {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+
 /* === 768px — планшеты === */
 @media (min-width: 481px) and (max-width: 768px) {
   .experts-list {
     grid-template-columns: repeat(2, 1fr);
   }
+
   .search-bar input {
     max-width: 340px;
   }
@@ -418,6 +602,7 @@ body {
   .experts-list {
     grid-template-columns: repeat(3, 1fr);
   }
+
   .filters {
     justify-content: center;
   }
@@ -435,9 +620,9 @@ body {
   .experts-list {
     grid-template-columns: repeat(5, 1fr);
   }
+
   .page-container {
     max-width: 1800px;
   }
 }
 </style>
-
