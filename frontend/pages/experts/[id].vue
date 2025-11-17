@@ -7,7 +7,7 @@
     <button class="back-btn" @click="goBack">← Вернуться к списку</button>
 
     <div class="notice">
-      💬 Вы можете договориться с Собеседником об удобной форме общения. Ваш приватный разговор может состояться в любом из доступных мессенджеров.
+      💬 Договаривайтесь с собеседником об удобной форме общения. Ваш приватный разговор может состояться в любом мессенджере.
     </div>
 
     <!-- Главное фото и информация -->
@@ -20,7 +20,7 @@
       <div class="details">
         <h1>{{ expert.name }}</h1>
         <p><strong>Возраст:</strong> {{ expert.age }}</p>
-        <p><strong>Пол:</strong> {{ expert.gender === 'male' ? 'Мужской' : 'Женский' }}</p>
+        <!-- <p><strong>Пол:</strong> {{ expert.gender === 'male' ? 'Мужской' : 'Женский' }}</p> -->
         <p><strong>Статус:</strong> {{ expert.availability }}</p>
         <p><strong>Стоимость часа от:</strong> {{ expert.price }} ₽</p>
         
@@ -329,12 +329,12 @@ onMounted(fetchExpert)
 }
 
 .notice {
-  background: #e3f2fd;
+  background: #e9edf3;
   border: 1px solid #2196f3;
   border-radius: 8px;
   padding: 15px;
   margin-bottom: 20px;
-  color: #1565c0;
+  color: #025cc4;
 }
 
 .main-info {

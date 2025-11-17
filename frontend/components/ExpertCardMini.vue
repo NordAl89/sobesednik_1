@@ -19,17 +19,29 @@
 <!-- <pre>{{ expert }}</pre>  -->
       <h3>
         {{ expert.name }} 
-         <span v-if="expert.alwaysAvailable" class="always-available">24/7</span>
+        <span
+          v-if="expert.alwaysAvailable"
+          class="always-available" 
+          title="Эксперт доступен круглосуточно"
+        >24/7</span>
          <!-- Значок верификации -->
-          <img
-           v-if="verifiedExpert"
-            src="/images/verified_expert2.png"
-            alt="Проверенный эксперт"
-            class="verified-badge"
-          />
+        <img
+         v-if="expert.adminVerified"
+          src="/images/verified_expert2.png"
+          alt="Проверенный эксперт"
+          class="verified-badge"
+          title="Личность собеседника подтверждена администрацией"
+        />
+         <img
+         v-if="expert.noForbiddenTopics && expert.forbiddenTopics.length === 0"
+          src="/images/unlocked_icon.png"
+          alt="Запретных тем нет"
+          class="verified-badge"
+          title="Собеседник готов общаться на любые темы"
+        />
       </h3>
       <p>Возраст: {{ expert.age }} {{ getAgeWord(expert.age) }}</p>
-      <p>Пол: {{ expert.gender === 'male' ? 'Мужской' : 'Женский' }}</p>
+      <!-- <p>Пол: {{ expert.gender === 'male' ? 'Мужской' : 'Женский' }}</p> -->
 
      <p class="status-text">
         Статус: 
@@ -40,7 +52,7 @@
 
       <p class="price"><span class="price_simple">Цена от:</span> {{ expert.price }} руб/час</p>
 
-      <p v-if="expert.allowedTopics">Разрешённые темы: {{ expert.allowedTopics }}</p>
+      <p v-if="expert.allowedTopics">Предпочитаю темы: {{ expert.allowedTopics }}</p>
       <p v-if="expert.forbiddenTopics">Запрещённые темы: {{ expert.forbiddenTopics }}</p>
       
     </div>
