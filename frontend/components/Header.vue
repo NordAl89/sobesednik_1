@@ -80,24 +80,31 @@ onMounted(() => {
 }
 
 /* ---------- Логотип ---------- */
-.logo a {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-}
-
 .logo-img {
   height: 60px;
   width: 60px;
   border-radius: 50%;
-  border: solid 2px #5d6adb;
+  border: solid 1px #cfb8f3;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   
+  /* 🔹 Объём: внешняя тень + внутренний блик */
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.15),     /* внешняя тень */
+    inset 0 2px 4px rgba(255, 255, 255, 0.7), /* внутренний верхний блик */
+    inset 0 -2px 4px rgba(0, 0, 0, 0.12);     /* немного глубины снизу */
 }
+
 .logo-img:hover {
   transform: scale(1.1);
+
+  /* при ховере объём усиливается */
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.2),
+    inset 0 2px 4px rgba(255, 255, 255, 0.8),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.18);
 }
+
 
 /* ---------- Навигация ---------- */
 .nav ul {
@@ -113,13 +120,21 @@ onMounted(() => {
   color: #333;
   font-weight: 600;
   padding: 6px 10px;
-  border-radius: 4px;
-  transition: all 0.3s;
+  border: solid .05px #cfb8f3;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+
+ 
 }
+
 .nav a:hover {
-  color: #007bff;
-  background-color: #f0f0f0;
+  color: #080808;
+  background-color: #e0cceebe;
+
+  /* немного усиление объёма при ховере */
+ 
 }
+
 
 .profile-link {
   background-color: #007bff;
@@ -202,6 +217,10 @@ onMounted(() => {
     flex-direction: column;
     gap: 18px;
     text-align: center;
+  }
+
+  .nav li {
+   background-color: red;
   }
 
   .nav a {

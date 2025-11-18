@@ -188,7 +188,7 @@
              <button 
              @click="verifyExpert(expert.id)" 
              class="action-btn verify-btn"
-             title="Подтвердить анкету"
+             title="Подтвердить данные собеседника"
             >
               🛡️ Вериф
             </button>
@@ -375,6 +375,13 @@ const deleteExpert = async (expertId) => {
     alert('Ошибка при удалении анкеты: ' + (error.data?.message || error.message))
   }
 }
+
+// Верификация собеседника
+const verifyExpert = async (expertId) => {
+  alert('Здесь нужно реализовать логику верификации собеседника', expertId)
+}
+  
+
 
 // Вспомогательные функции
 const getStatusText = (status) => {

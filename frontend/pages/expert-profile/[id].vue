@@ -88,9 +88,9 @@
           <button @click="contactAdmin" class="contact-admin-btn">
             Связаться с админом
           </button>
-          <button @click="extendPublication" class="extend-publication-btn">
+          <!-- <button @click="extendPublication" class="extend-publication-btn">
             Продлить публикацию
-          </button>
+          </button> -->
           <button @click="toMyProfile" class="to-my-profile-btn">
             Моя анкета
           </button>

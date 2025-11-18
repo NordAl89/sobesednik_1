@@ -26,7 +26,7 @@
         >24/7</span>
          <!-- Значок верификации -->
         <img
-         v-if="expert.adminVerified"
+         v-if="expert.expertVerified"
           src="/images/verified_expert2.png"
           alt="Проверенный эксперт"
           class="verified-badge"
